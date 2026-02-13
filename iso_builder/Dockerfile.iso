@@ -1,0 +1,38 @@
+FROM debian:bookworm-slim
+
+# ==============================================================================
+# SOS ISO Builder — Docker Image
+# ==============================================================================
+# This image contains all tools needed to build SOS Live ISOs.
+# Usage:
+#   docker build -f iso_builder/Dockerfile.iso -t sos-iso-builder .
+#   docker run --privileged -v $(pwd):/workspace -v $(pwd)/output:/workspace/output \
+#       sos-iso-builder scout
+# ==============================================================================
+
+LABEL maintainer="SOS Resgate Platform"
+LABEL description="Build environment for SOS Live ISOs"
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    debootstrap \
+    xorriso \
+    squashfs-tools \
+    mtools \
+    dosfstools \
+    grub-pc-bin \
+    grub-efi-amd64-bin \
+    grub-common \
+    grub2-common \
+    isolinux \
+    syslinux-common \
+    syslinux-efi \
+    wget curl \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /workspace
+
+ENTRYPOINT ["/bin/bash", "BUILD_ISO.sh"]
+CMD ["scout"]
