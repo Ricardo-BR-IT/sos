@@ -1,0 +1,27 @@
+export const languageList = [
+    { code: 'en', name: 'English', rank: 1, translated: true },
+    { code: 'zh', name: 'Chinese (Mandarin)', rank: 2 },
+    { code: 'hi', name: 'Hindi', rank: 3 },
+    { code: 'es', name: 'Spanish', rank: 4 },
+    { code: 'ar', name: 'Arabic (Modern Standard)', rank: 5, rtl: true },
+    { code: 'fr', name: 'French', rank: 6 },
+    { code: 'bn', name: 'Bengali', rank: 7 },
+    { code: 'pt', name: 'Portuguese', rank: 8, translated: true },
+    { code: 'ru', name: 'Russian', rank: 9 },
+    { code: 'id', name: 'Indonesian', rank: 10 },
+    { code: 'ur', name: 'Urdu', rank: 11, rtl: true },
+    { code: 'de', name: 'German', rank: 12 },
+    { code: 'ja', name: 'Japanese', rank: 13 },
+    { code: 'pcm', name: 'Nigerian Pidgin', rank: 14 },
+    { code: 'arz', name: 'Egyptian Arabic', rank: 15, rtl: true },
+    { code: 'mr', name: 'Marathi', rank: 16 },
+    { code: 'vi', name: 'Vietnamese', rank: 17 },
+    { code: 'te', name: 'Telugu', rank: 18 },
+    { code: 'ha', name: 'Hausa', rank: 19 },
+    { code: 'tr', name: 'Turkish', rank: 20 },
+    { code: 'sw', name: 'Swahili', rank: null },
+    { code: 'ta', name: 'Tamil', rank: null },
+    { code: 'it', name: 'Italian', rank: null },
+];
+
+export const rtlLocales = new Set(['ar', 'ur', 'fa', 'he', 'arz']);

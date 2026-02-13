@@ -1,0 +1,2 @@
+rootProject.name = 'resgatesos-java'
+include 'core', 'mini', 'standard', 'server'

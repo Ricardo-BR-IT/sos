@@ -1,0 +1,14 @@
+# Legacy FTP script (non-recursive). Prefer scripts/ftp_upload.ps1
+open mentalesaude.com.br
+mentales
+4dSeA.3g0E6R(z
+binary
+prompt
+cd public_html
+mkdir ricardo
+cd ricardo
+mkdir sos
+cd sos
+lcd c:\site\mentalesaude\www\ricardo\sos\deploy_stage
+mput *
+quit

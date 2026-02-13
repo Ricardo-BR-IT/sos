@@ -1,0 +1,68 @@
+# Flutter/Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
+**/build/
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/ephemeral/
+**/android/.gradle/
+**/android/local.properties
+**/android/key.properties
+**/android/app/key.properties
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Node
+node_modules/
+.next/
+out/
+
+# Java/Gradle
+.gradle/
+**/build/
+java/**/build/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets
+keys/
+*.keystore
+*.jks
+
+# Deploy artifacts
+resgatesos_web.tar.gz
+deploy_stage/
+apps/web_portal/out/
+apps/web_portal/public/downloads/
+
+
+# Vibe Video
+.vv-secrets.json
+.temp/
+video-clip/*.mp4
+first-frames/*.png
+output/*.mp4
+
+# SOS ISO Builder
+build_iso_*/
+output/*.iso
+output/*.txt
+iso_builder/assets/ranger/*.zim
+iso_builder/assets/omega/*.zim
+iso_builder/assets/omega/*.gguf
+iso_builder/assets/maps/*.osm.pbf
+java/dist/*.zip
+apps/desktop_server/*.zip
+**/resgatesos_java_server.zip

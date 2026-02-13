@@ -1,0 +1,21 @@
+name: sos_kernel
+environment:
+  sdk: ">=2.19.0 <4.0.0"
+dependencies:
+  flutter:
+    sdk: flutter
+  sqflite: ^2.2.5
+  drift: ^2.12.0
+  sodium_libs: ^2.0.0
+  flutter_secure_storage: ^9.0.0
+  path_provider: ^2.0.0
+  path: ^1.8.0
+  xml: ^6.5.0
+  sos_transports:
+    path: ../sos_transports
+  crypto: ^3.0.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  mockito: ^5.4.0

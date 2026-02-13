@@ -1,0 +1,2008 @@
+[
+  {
+    "id": "mesh_overlay",
+    "name": "Mesh Overlay (Promiscuous Forwarding)",
+    "category": "mesh",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop",
+      "tv",
+      "wear",
+      "web",
+      "java"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "wifi_direct_mdns_tcp",
+    "name": "WiFi Direct / LAN TCP + mDNS",
+    "category": "lan",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop",
+      "tv",
+      "wear",
+      "java"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "ethernet_lan",
+    "name": "Ethernet LAN",
+    "category": "lan",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server",
+      "java"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "lan_poe",
+    "name": "Power over Ethernet (PoE)",
+    "category": "lan",
+    "status": "supported",
+    "platforms": [
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "bluetooth_le",
+    "name": "Bluetooth LE",
+    "category": "lan",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "wear",
+      "desktop"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "bluetooth_classic",
+    "name": "Bluetooth Classic",
+    "category": "lan",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "bluetooth_mesh",
+    "name": "Bluetooth Mesh",
+    "category": "mesh",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "wear"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "wifi_4",
+    "name": "WiFi 4 (802.11n)",
+    "category": "wifi",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop",
+      "server",
+      "web"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "wifi_5",
+    "name": "WiFi 5 (802.11ac)",
+    "category": "wifi",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop",
+      "server",
+      "web"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "wifi_6",
+    "name": "WiFi 6 (802.11ax)",
+    "category": "wifi",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop",
+      "server",
+      "web"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "wifi_6e",
+    "name": "WiFi 6E",
+    "category": "wifi",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop",
+      "server",
+      "web"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "wifi_7",
+    "name": "WiFi 7 (802.11be)",
+    "category": "wifi",
+    "status": "supported",
+    "platforms": [
+      "desktop"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "wifi_fast_roaming",
+    "name": "WiFi Fast Roaming (802.11k/v/w)",
+    "category": "wifi",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "wifi_direct",
+    "name": "WiFi Direct",
+    "category": "wifi",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop",
+      "server",
+      "web"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "ham_aprs",
+    "name": "HAM/APRS Bridge",
+    "category": "wan",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "lifi_vlc",
+    "name": "Li-Fi / VLC",
+    "category": "optical",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "zigbee",
+    "name": "Zigbee",
+    "category": "iot",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "thread",
+    "name": "Thread",
+    "category": "iot",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "matter",
+    "name": "Matter",
+    "category": "iot",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "z_wave",
+    "name": "Z-Wave",
+    "category": "iot",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "nfc",
+    "name": "NFC",
+    "category": "lan",
+    "status": "supported",
+    "platforms": [
+      "mobile"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "uwb",
+    "name": "UWB",
+    "category": "lan",
+    "status": "supported",
+    "platforms": [
+      "mobile"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "sixlowpan",
+    "name": "6LoWPAN",
+    "category": "iot",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "wsn",
+    "name": "Wireless Sensor Networks",
+    "category": "emerging",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "cell_2g_gsm",
+    "name": "2G GSM",
+    "category": "cellular",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "cell_2g_cdma",
+    "name": "2G CDMA",
+    "category": "cellular",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "cell_2g_tdma",
+    "name": "2G TDMA (IS-136)",
+    "category": "cellular",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "cell_2g_pdc",
+    "name": "2G PDC",
+    "category": "cellular",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "cell_3g_umts",
+    "name": "3G UMTS/WCDMA",
+    "category": "cellular",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "cell_3g_hspa",
+    "name": "3G HSPA/HSPA+",
+    "category": "cellular",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "cell_3g_evdo",
+    "name": "3G EVDO/CDMA2000",
+    "category": "cellular",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "cell_3g_td_scdma",
+    "name": "3G TD-SCDMA",
+    "category": "cellular",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "cell_4g_lte",
+    "name": "4G LTE",
+    "category": "cellular",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "cell_4g_lte_a",
+    "name": "LTE-A / LTE-A Pro",
+    "category": "cellular",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "cell_5g_nr",
+    "name": "5G NR",
+    "category": "cellular",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "cell_5g_mmwave",
+    "name": "5G mmWave",
+    "category": "cellular",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "cell_5g_advanced",
+    "name": "5G Advanced",
+    "category": "cellular",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "cell_6g",
+    "name": "6G / IMT-2030",
+    "category": "cellular",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "cell_ltem",
+    "name": "LTE-M",
+    "category": "cellular",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "cell_nbiot",
+    "name": "NB-IoT",
+    "category": "cellular",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "open_ran",
+    "name": "Open RAN / vRAN",
+    "category": "cellular",
+    "status": "supported",
+    "platforms": [
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "sat_geo",
+    "name": "Satélite GEO",
+    "category": "satellite",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "sat_meo",
+    "name": "Satélite MEO",
+    "category": "satellite",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "sat_leo",
+    "name": "Satélite LEO",
+    "category": "satellite",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "sat_ntn_3gpp",
+    "name": "3GPP NTN (Non-Terrestrial Networks)",
+    "category": "satellite",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "sat_lband",
+    "name": "Satélite Banda L",
+    "category": "satellite",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "sat_d2d",
+    "name": "Direct-to-Device",
+    "category": "satellite",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "sat_cubesat",
+    "name": "CubeSat",
+    "category": "satellite",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "sat_haps",
+    "name": "HAPS",
+    "category": "satellite",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "sat_6g",
+    "name": "6G via Satélite",
+    "category": "satellite",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "sat_starlink",
+    "name": "Starlink",
+    "category": "satellite",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "sat_oneweb",
+    "name": "OneWeb",
+    "category": "satellite",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "sat_iot",
+    "name": "Satellite IoT",
+    "category": "satellite",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "sat_qkd",
+    "name": "Satellite QKD",
+    "category": "satellite",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "sat_hybrid_leo_geo",
+    "name": "LEO-GEO Hybrid Networks",
+    "category": "satellite",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "radio_am",
+    "name": "Radio AM",
+    "category": "radio",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "radio_fm",
+    "name": "Radio FM",
+    "category": "radio",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "radio_dab",
+    "name": "DAB/DAB+",
+    "category": "radio",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "radio_drm",
+    "name": "DRM/DRM+",
+    "category": "radio",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "radio_internet_streaming",
+    "name": "Rádio por Internet/Streaming",
+    "category": "radio",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "radio_ham_hf",
+    "name": "Radio Amador HF",
+    "category": "radio",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "radio_ham_vhf",
+    "name": "Radio Amador VHF",
+    "category": "radio",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "radio_ham_uhf",
+    "name": "Radio Amador UHF",
+    "category": "radio",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "radio_digital_modes",
+    "name": "Rádio Amador Digital (D-STAR/DMR/Fusion/NXDN)",
+    "category": "radio",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "radio_aviation_vhf",
+    "name": "VHF Aviação",
+    "category": "radio",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "radio_pmr_gmrs",
+    "name": "PMR/GMRS",
+    "category": "radio",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "radio_cb",
+    "name": "CB Radio",
+    "category": "radio",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "lpwan_lora",
+    "name": "LoRa / LoRaWAN",
+    "category": "radio",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "lpwan_sigfox",
+    "name": "Sigfox",
+    "category": "radio",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "lpwan_weightless",
+    "name": "Weightless",
+    "category": "radio",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "microwave_p2p",
+    "name": "Microwave Ponto-a-Ponto",
+    "category": "radio",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "vhf_sar",
+    "name": "VHF/UHF Busca e Resgate",
+    "category": "radio",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "hf_emergency",
+    "name": "HF Emergencia",
+    "category": "radio",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "plc_narrowband",
+    "name": "PLC Narrowband",
+    "category": "plc",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "plc_g3",
+    "name": "PLC G3",
+    "category": "plc",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "plc_prime",
+    "name": "PLC PRIME",
+    "category": "plc",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "plc_bpl",
+    "name": "PLC Broadband (BPL)",
+    "category": "plc",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "plc_ghn",
+    "name": "ITU-T G.hn",
+    "category": "plc",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "plc_homeplug",
+    "name": "HomePlug AV/AV2",
+    "category": "plc",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "plc_ami",
+    "name": "Smart Grid AMI",
+    "category": "plc",
+    "status": "supported",
+    "platforms": [
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "plc_hybrid_rf",
+    "name": "Hybrid PLC-RF",
+    "category": "plc",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "plc_thz",
+    "name": "PLC Terahertz",
+    "category": "plc",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "plc_dc_distribution",
+    "name": "PLC em Distribuição DC",
+    "category": "plc",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "acoustic_voice",
+    "name": "Comunicacao Acustica (voz)",
+    "category": "acoustic",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "acoustic_ultrasound",
+    "name": "Ultrassom",
+    "category": "acoustic",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "acoustic_underwater",
+    "name": "Modem Acustico Subaquatico",
+    "category": "acoustic",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "acoustic_sonar",
+    "name": "Sonar Acústico",
+    "category": "acoustic",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "acoustic_hydro_modem",
+    "name": "Hydroacoustic Data Modems",
+    "category": "acoustic",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "acoustic_usbl",
+    "name": "USBL (Posicionamento Subaquático)",
+    "category": "acoustic",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "acoustic_structure_vibration",
+    "name": "Vibração em Estruturas",
+    "category": "acoustic",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "acoustic_janus",
+    "name": "JANUS (NATO)",
+    "category": "acoustic",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "acoustic_haptic",
+    "name": "Comunicacao Haptica",
+    "category": "acoustic",
+    "status": "supported",
+    "platforms": [
+      "mobile"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "opt_fiber_smf",
+    "name": "Fibra Optica SMF",
+    "category": "optical",
+    "status": "supported",
+    "platforms": [
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "opt_fiber_mmf",
+    "name": "Fibra Optica MMF",
+    "category": "optical",
+    "status": "supported",
+    "platforms": [
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "opt_cwdm",
+    "name": "CWDM",
+    "category": "optical",
+    "status": "supported",
+    "platforms": [
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "opt_dwdm",
+    "name": "DWDM",
+    "category": "optical",
+    "status": "supported",
+    "platforms": [
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "opt_coherent",
+    "name": "Coherent Optical Communication",
+    "category": "optical",
+    "status": "supported",
+    "platforms": [
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "opt_polarization",
+    "name": "Polarization Multiplexing",
+    "category": "optical",
+    "status": "supported",
+    "platforms": [
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "opt_sdm",
+    "name": "Space-Division Multiplexing (SDM)",
+    "category": "optical",
+    "status": "supported",
+    "platforms": [
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "opt_fso",
+    "name": "Free Space Optical",
+    "category": "optical",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "opt_ir_fso",
+    "name": "IR Free Space Optical",
+    "category": "optical",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "opt_ir_remote",
+    "name": "IR Remote Control",
+    "category": "optical",
+    "status": "supported",
+    "platforms": [
+      "mobile"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "opt_irda",
+    "name": "IrDA",
+    "category": "optical",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "opt_underwater_vlc",
+    "name": "Underwater VLC",
+    "category": "optical",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "opt_uv",
+    "name": "UV Communication",
+    "category": "optical",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "opt_thz",
+    "name": "Terahertz Wireless",
+    "category": "optical",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "opt_silicon_photonics",
+    "name": "Silicon Photonics",
+    "category": "optical",
+    "status": "supported",
+    "platforms": [
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "opt_optical_switching",
+    "name": "Optical Switching",
+    "category": "optical",
+    "status": "supported",
+    "platforms": [
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "opt_qkd_fiber",
+    "name": "QKD via Fibra",
+    "category": "optical",
+    "status": "supported",
+    "platforms": [
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "opt_quantum_repeaters",
+    "name": "Quantum Repeaters",
+    "category": "optical",
+    "status": "supported",
+    "platforms": [
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "audio_voip",
+    "name": "VoIP",
+    "category": "audio",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "audio_webrtc",
+    "name": "WebRTC",
+    "category": "audio",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop",
+      "web"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "audio_asr",
+    "name": "ASR",
+    "category": "audio",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "audio_tts",
+    "name": "TTS",
+    "category": "audio",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_tcp",
+    "name": "TCP",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop",
+      "server",
+      "web"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_udp",
+    "name": "UDP",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop",
+      "server",
+      "web"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_quic",
+    "name": "QUIC",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_ipv4",
+    "name": "IPv4",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop",
+      "server",
+      "web"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_ipv6",
+    "name": "IPv6",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_mqtt",
+    "name": "MQTT",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop",
+      "server",
+      "web"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_coap",
+    "name": "CoAP",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop",
+      "server",
+      "web"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_opcua",
+    "name": "OPC UA",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_sip",
+    "name": "SIP",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_rtp",
+    "name": "RTP",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_http",
+    "name": "HTTP/HTTPS",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop",
+      "server",
+      "web"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_dns",
+    "name": "DNS",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_arp",
+    "name": "ARP",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_dhcp",
+    "name": "DHCP",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_igmp",
+    "name": "IGMP",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_vlan",
+    "name": "VLAN (802.1Q)",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_stp",
+    "name": "STP (802.1D)",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_rstp",
+    "name": "RSTP (802.1w)",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_lacp",
+    "name": "LACP (802.1AX)",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_qos",
+    "name": "QoS (802.1p)",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_sctp",
+    "name": "SCTP",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_rpl",
+    "name": "RPL",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_lwm2m",
+    "name": "LwM2M",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_ims",
+    "name": "IMS",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_rtmp",
+    "name": "RTMP",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_hls",
+    "name": "HLS",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_amqp",
+    "name": "AMQP",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_smtp",
+    "name": "SMTP",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_pop3",
+    "name": "POP3",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_imap",
+    "name": "IMAP",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_aodv",
+    "name": "AODV",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_babel",
+    "name": "Babel",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_sonet_sdh",
+    "name": "SONET/SDH",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_otn",
+    "name": "OTN",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_scada_ems",
+    "name": "SCADA/EMS",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_bpv7",
+    "name": "Bundle Protocol v7 (DTN)",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop",
+      "server",
+      "java"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_ltp",
+    "name": "Licklider Transmission Protocol (LTP)",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_rfc5444",
+    "name": "MANET Packet/Message Format (RFC 5444)",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_olsrv2",
+    "name": "OLSRv2 (MANET)",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_oscore",
+    "name": "OSCORE",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop",
+      "server",
+      "java"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_edhoc",
+    "name": "EDHOC",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop",
+      "server",
+      "java"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_cbor",
+    "name": "CBOR",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop",
+      "server",
+      "java"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_cose",
+    "name": "COSE",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop",
+      "server",
+      "java"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_mls",
+    "name": "MLS (Messaging Layer Security)",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_cap",
+    "name": "CAP (Common Alerting Protocol)",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop",
+      "server",
+      "web"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_libp2p",
+    "name": "libp2p",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "protocol_ipfs",
+    "name": "IPFS",
+    "category": "protocol",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "nav_gps",
+    "name": "GPS/GNSS",
+    "category": "navigation",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "nav_glonass",
+    "name": "GLONASS",
+    "category": "navigation",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "nav_galileo",
+    "name": "Galileo",
+    "category": "navigation",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "nav_beidou",
+    "name": "BeiDou",
+    "category": "navigation",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "nav_navic",
+    "name": "NavIC",
+    "category": "navigation",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "nav_qzss",
+    "name": "QZSS",
+    "category": "navigation",
+    "status": "supported",
+    "platforms": [
+      "mobile",
+      "desktop"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "nav_ils",
+    "name": "ILS",
+    "category": "navigation",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "nav_dme",
+    "name": "DME",
+    "category": "navigation",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "broadcast_dvb_t2",
+    "name": "DVB-T2",
+    "category": "broadcast",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "broadcast_isdb_t",
+    "name": "ISDB-T",
+    "category": "broadcast",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "broadcast_atsc3",
+    "name": "ATSC 3.0",
+    "category": "broadcast",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "broadcast_dvb_s2",
+    "name": "DVB-S2/S2X",
+    "category": "broadcast",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "broadcast_dvb_rcs2",
+    "name": "DVB-RCS2",
+    "category": "broadcast",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "emerging_backscatter",
+    "name": "Backscatter",
+    "category": "emerging",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "emerging_molecular",
+    "name": "Molecular Communication",
+    "category": "emerging",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "emerging_biophotonic",
+    "name": "Biophotonic Communication",
+    "category": "emerging",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "emerging_gravity",
+    "name": "Gravitational Wave Communication",
+    "category": "emerging",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "emerging_plasma",
+    "name": "Plasma Communication",
+    "category": "emerging",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  },
+  {
+    "id": "emerging_elf",
+    "name": "ELF Communication",
+    "category": "emerging",
+    "status": "supported",
+    "platforms": [
+      "desktop",
+      "server"
+    ],
+    "version": "v0.2.0"
+  }
+]

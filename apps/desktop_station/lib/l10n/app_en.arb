@@ -1,0 +1,7 @@
+{
+  "appTitle": "Resgate SOS Mobile",
+  "initializingSecurity": "Initializing Security...",
+  "secureIdentityLoaded": "Secure Identity Loaded",
+  "activeNode": "Active Node: ",
+  "error": "Error: "
+}

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Resgate SOS Lite</title>
+    <meta name="theme-color" content="#000000">
+    <link rel="manifest" href="manifest.json">
+    <style>
+        body {
+            background-color: #000;
+            color: lime;
+            font-family: 'Courier New', Courier, monospace;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+        }
+        h1 { font-size: 18px; margin-bottom: 30px; border-bottom: 1px solid lime; padding-bottom: 10px;}
+        #sos-btn {
+            background-color: #aa0000;
+            color: white;
+            border: 2px solid white;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            font-size: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 30px;
+        }
+        #sos-btn:active { background-color: #ff0000; border-color: red; }
+        .status { font-size: 12px; margin-top: 10px; color: #888; }
+        .log { text-align: left; width: 100%; font-size: 10px; border-top: 1px solid #333; padding-top: 10px; margin-top: auto; height: 100px; overflow-y: scroll; }
+    </style>
+</head>
+<body>
+
+    <h1>RESGATE SOS :: LEGACY</h1>
+
+    <button id="sos-btn" onclick="triggerSOS()">SOS</button>
+
+    <div id="status" class="status">System Ready...</div>
+    <div id="coords" class="status">GPS: Waiting...</div>
+
+    <div id="log" class="log"></div>
+
+    <script>
+        // LEGACY JS (ES5) COMPATIBLE
+        var consoleLog = document.getElementById('log');
+        
+        function log(msg) {
+            var el = document.createElement('div');
+            el.innerHTML = "> " + msg;
+            consoleLog.insertBefore(el, consoleLog.firstChild);
+        }
+
+        function triggerSOS() {
+            log("SOS ACTIVATED!");
+            document.getElementById('sos-btn').style.backgroundColor = 'red';
+            
+            // Try convert GPS
+            if(navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(pos) {
+                    var lat = pos.coords.latitude.toFixed(5);
+                    var lng = pos.coords.longitude.toFixed(5);
+                    document.getElementById('coords').innerHTML = "GPS: " + lat + ", " + lng;
+                    log("Location Acquired: " + lat + "/" + lng);
+                }, function(err) {
+                    log("GPS Error: " + err.message);
+                }, { timeout: 10000, enableHighAccuracy: true });
+            } else {
+                log("GPS Not Supported");
+            }
+        }
+
+        // Service Worker for Offline
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').then(function() {
+                log("Offline Mode: Active");
+            }).catch(function(err) {
+                log("SW Fail: " + err);
+            });
+        }
+    </script>
+</body>
+</html>

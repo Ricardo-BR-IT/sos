@@ -1,0 +1,29 @@
+name: sos_transports
+description: SOS Multi-Protocol Transport Layer
+version: 1.0.0
+environment:
+  sdk: ">=2.19.0 <4.0.0"
+dependencies:
+  flutter_blue_plus: ^1.30.0
+  bonsoir: ^6.0.1
+  permission_handler: ^11.0.0
+  mqtt_client: ^10.0.0
+  win_ble: ^1.1.1
+  flutter_ble_peripheral: ^2.1.0
+  bluez: ^0.8.0
+  nearby_connections: ^3.2.0
+  wifi_iot: ^0.3.18
+  lan_scanner: ^4.0.0
+  udp: ^5.0.0
+  dart_ping: ^8.1.0
+  network_info_plus: ^5.0.3
+  shelf: ^1.4.1
+  shelf_router: ^1.1.4
+  shelf_web_socket: ^1.0.4
+  sos_kernel:
+    path: ../sos_kernel
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  mockito: ^5.4.4

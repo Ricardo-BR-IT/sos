@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Transportes - Resgate SOS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .transport-card {
+            transition: all 0.3s ease;
+        }
+        .transport-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .status-online { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .status-offline { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+        .status-partial { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        .status-experimental { background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%); }
+        
+        .metric-card {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .pulse { animation: pulse 2s infinite; }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+    <!-- Header -->
+    <header class="bg-gray-800 border-b border-gray-700">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <i data-lucide="radio" class="w-8 h-8 text-blue-400"></i>
+                    <h1 class="text-2xl font-bold">Gerenciador de Transportes</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button onclick="refreshStatus()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg flex items-center space-x-2 transition">
+                        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                        <span>Atualizar</span>
+                    </button>
+                    <button onclick="toggleDarkMode()" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg">
+                        <i data-lucide="moon" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Status Overview -->
+        <section class="mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="metric-card rounded-xl p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm">Transportes Ativos</p>
+                            <p class="text-3xl font-bold" id="activeTransports">0</p>
+                        </div>
+                        <i data-lucide="activity" class="w-8 h-8 text-green-400"></i>
+                    </div>
+                </div>
+                <div class="metric-card rounded-xl p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm">Nós Conectados</p>
+                            <p class="text-3xl font-bold" id="connectedNodes">0</p>
+                        </div>
+                        <i data-lucide="users" class="w-8 h-8 text-blue-400"></i>
+                    </div>
+                </div>
+                <div class="metric-card rounded-xl p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm">Mensagens/hora</p>
+                            <p class="text-3xl font-bold" id="messagesPerHour">0</p>
+                        </div>
+                        <i data-lucide="message-square" class="w-8 h-8 text-purple-400"></i>
+                    </div>
+                </div>
+                <div class="metric-card rounded-xl p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm">Taxa de Erro</p>
+                            <p class="text-3xl font-bold" id="errorRate">0%</p>
+                        </div>
+                        <i data-lucide="alert-triangle" class="w-8 h-8 text-red-400"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Transport Cards -->
+        <section class="mb-8">
+            <h2 class="text-xl font-bold mb-6">Transportes Disponíveis</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="transportGrid">
+                <!-- Transport cards will be inserted here -->
+            </div>
+        </section>
+
+        <!-- Network Map -->
+        <section class="mb-8">
+            <h2 class="text-xl font-bold mb-6">Mapa da Rede</h2>
+            <div class="bg-gray-800 rounded-xl p-6 h-96">
+                <canvas id="networkMap" class="w-full h-full"></canvas>
+            </div>
+        </section>
+
+        <!-- Configuration Panel -->
+        <section class="mb-8">
+            <h2 class="text-xl font-bold mb-6">Configuração Avançada</h2>
+            <div class="bg-gray-800 rounded-xl p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="font-semibold mb-4">Configurações Gerais</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Modo de Operação</label>
+                                <select id="operationMode" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2">
+                                    <option value="auto">Automático</option>
+                                    <option value="manual">Manual</option>
+                                    <option value="emergency">Emergência</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Prioridade de Transporte</label>
+                                <select id="transportPriority" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2">
+                                    <option value="reliability">Confiabilidade</option>
+                                    <option value="speed">Velocidade</option>
+                                    <option value="range">Alcance</option>
+                                    <option value="security">Segurança</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Limite de Hops</label>
+                                <input type="number" id="hopLimit" value="10" min="1" max="20" 
+                                       class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2">
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold mb-4">Configurações de Segurança</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <label class="text-sm font-medium">Criptografia OSCORE</label>
+                                <button id="oscoreToggle" class="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded-full text-sm">
+                                    Ativar
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <label class="text-sm font-medium">EDHOC</label>
+                                <button id="edhocToggle" class="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded-full text-sm">
+                                    Ativar
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <label class="text-sm font-medium">DTN Store-and-Forward</label>
+                                <button id="dtnToggle" class="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded-full text-sm">
+                                    Ativar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Transport data
+        const transports = [
+            {
+                id: 'ble',
+                name: 'Bluetooth LE',
+                icon: 'bluetooth',
+                status: 'online',
+                platforms: ['mobile', 'wear', 'desktop'],
+                description: 'BLE completo com advertising, scanning e GATT',
+                metrics: { nodes: 8, messages: 245, errors: 2 }
+            },
+            {
+                id: 'bluetooth_classic',
+                name: 'Bluetooth Classic',
+                icon: 'bluetooth',
+                status: 'online',
+                platforms: ['mobile', 'desktop'],
+                description: 'RFCOMM/BR-EDR com descoberta automática',
+                metrics: { nodes: 3, messages: 89, errors: 0 }
+            },
+            {
+                id: 'bluetooth_mesh',
+                name: 'Bluetooth Mesh',
+                icon: 'share-2',
+                status: 'online',
+                platforms: ['mobile', 'wear'],
+                description: 'Provisioning e relay via BLE',
+                metrics: { nodes: 12, messages: 156, errors: 1 }
+            },
+            {
+                id: 'wifi_lan',
+                name: 'WiFi LAN',
+                icon: 'wifi',
+                status: 'online',
+                platforms: ['mobile', 'desktop', 'tv', 'wear'],
+                description: 'mDNS + TCP para redes locais',
+                metrics: { nodes: 15, messages: 432, errors: 3 }
+            },
+            {
+                id: 'ethernet',
+                name: 'Ethernet LAN',
+                icon: 'ethernet',
+                status: 'online',
+                platforms: ['desktop', 'server'],
+                description: 'TCP/IP sobre conexão física',
+                metrics: { nodes: 6, messages: 178, errors: 0 }
+            },
+            {
+                id: 'lorawan',
+                name: 'LoRa/LoRaWAN',
+                icon: 'radio',
+                status: 'partial',
+                platforms: ['desktop', 'server'],
+                description: 'Comunicação serial com AT commands',
+                metrics: { nodes: 2, messages: 45, errors: 1 }
+            },
+            {
+                id: 'dtn',
+                name: 'DTN Bundle Protocol',
+                icon: 'package',
+                status: 'online',
+                platforms: ['mobile', 'desktop', 'server', 'java'],
+                description: 'Store-and-forward com custody transfer',
+                metrics: { nodes: 4, messages: 67, errors: 0 }
+            },
+            {
+                id: 'secure',
+                name: 'OSCORE/EDHOC/COSE',
+                icon: 'shield',
+                status: 'online',
+                platforms: ['mobile', 'desktop', 'server', 'java'],
+                description: 'Segurança para redes restritas',
+                metrics: { nodes: 0, messages: 0, errors: 0 }
+            },
+            {
+                id: 'webrtc',
+                name: 'WebRTC',
+                icon: 'video',
+                status: 'experimental',
+                platforms: ['mobile', 'desktop', 'web'],
+                description: 'Audio, video e data channels',
+                metrics: { nodes: 2, messages: 23, errors: 2 }
+            },
+            {
+                id: 'zigbee',
+                name: 'Zigbee',
+                icon: 'router',
+                status: 'offline',
+                platforms: ['iot'],
+                description: 'Mesh IoT de baixa potência',
+                metrics: { nodes: 0, messages: 0, errors: 0 }
+            }
+        ];
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            renderTransportCards();
+            updateMetrics();
+            initializeNetworkMap();
+            setupEventListeners();
+        });
+
+        function renderTransportCards() {
+            const grid = document.getElementById('transportGrid');
+            grid.innerHTML = '';
+
+            transports.forEach(transport => {
+                const card = createTransportCard(transport);
+                grid.appendChild(card);
+            });
+        }
+
+        function createTransportCard(transport) {
+            const card = document.createElement('div');
+            card.className = 'transport-card bg-gray-800 rounded-xl p-6 border border-gray-700';
+            
+            const statusClass = getStatusClass(transport.status);
+            const statusText = getStatusText(transport.status);
+
+            card.innerHTML = `
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="${statusClass} p-2 rounded-lg">
+                            <i data-lucide="${transport.icon}" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-lg">${transport.name}</h3>
+                            <p class="text-sm text-gray-400">${transport.id}</p>
+                        </div>
+                    </div>
+                    <span class="${statusClass} px-3 py-1 rounded-full text-xs font-medium">
+                        ${statusText}
+                    </span>
+                </div>
+                <p class="text-gray-300 mb-4">${transport.description}</p>
+                <div class="space-y-2">
+                    <div class="flex flex-wrap gap-1">
+                        ${transport.platforms.map(platform => 
+                            `<span class="bg-gray-700 px-2 py-1 rounded text-xs">${platform}</span>`
+                        ).join('')}
+                    </div>
+                    <div class="grid grid-cols-3 gap-4 text-sm">
+                        <div>
+                            <p class="text-gray-400">Nós</p>
+                            <p class="font-semibold">${transport.metrics.nodes}</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-400">Msg/h</p>
+                            <p class="font-semibold">${transport.metrics.messages}</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-400">Erros</p>
+                            <p class="font-semibold text-red-400">${transport.metrics.errors}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4 flex space-x-2">
+                    <button onclick="configureTransport('${transport.id}')" 
+                            class="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm">
+                        Configurar
+                    </button>
+                    <button onclick="testTransport('${transport.id}')" 
+                            class="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm">
+                        Testar
+                    </button>
+                    <button onclick="viewLogs('${transport.id}')" 
+                            class="bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-sm">
+                        Logs
+                    </button>
+                </div>
+            `;
+
+            return card;
+        }
+
+        function getStatusClass(status) {
+            switch(status) {
+                case 'online': return 'status-online';
+                case 'offline': return 'status-offline';
+                case 'partial': return 'status-partial';
+                case 'experimental': return 'status-experimental';
+                default: return 'status-offline';
+            }
+        }
+
+        function getStatusText(status) {
+            switch(status) {
+                case 'online': return 'Online';
+                case 'offline': return 'Offline';
+                case 'partial': return 'Parcial';
+                case 'experimental': return 'Experimental';
+                default: return 'Desconhecido';
+            }
+        }
+
+        function updateMetrics() {
+            const activeTransports = transports.filter(t => t.status === 'online').length;
+            const totalNodes = transports.reduce((sum, t) => sum + t.metrics.nodes, 0);
+            const totalMessages = transports.reduce((sum, t) => sum + t.metrics.messages, 0);
+            const totalErrors = transports.reduce((sum, t) => sum + t.metrics.errors, 0);
+            const errorRate = totalMessages > 0 ? ((totalErrors / totalMessages) * 100).toFixed(1) : 0;
+
+            document.getElementById('activeTransports').textContent = activeTransports;
+            document.getElementById('connectedNodes').textContent = totalNodes;
+            document.getElementById('messagesPerHour').textContent = totalMessages;
+            document.getElementById('errorRate').textContent = errorRate + '%';
+        }
+
+        function initializeNetworkMap() {
+            const canvas = document.getElementById('networkMap');
+            const ctx = canvas.getContext('2d');
+            
+            // Simple network visualization
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, width, height);
+            
+            // Draw connections
+            ctx.strokeStyle = '#4b5563';
+            ctx.lineWidth = 2;
+            
+            // Draw nodes
+            transports.forEach((transport, index) => {
+                if (transport.metrics.nodes > 0) {
+                    const x = Math.random() * (width - 40) + 20;
+                    const y = Math.random() * (height - 40) + 20;
+                    
+                    // Draw node
+                    ctx.beginPath();
+                    ctx.arc(x, y, 8, 0, 2 * Math.PI);
+                    ctx.fillStyle = getStatusColor(transport.status);
+                    ctx.fill();
+                    
+                    // Draw label
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = '12px sans-serif';
+                    ctx.fillText(transport.name, x - 30, y + 25);
+                }
+            });
+        }
+
+        function getStatusColor(status) {
+            switch(status) {
+                case 'online': return '#10b981';
+                case 'offline': return '#ef4444';
+                case 'partial': return '#f59e0b';
+                case 'experimental': return '#8b5cf6';
+                default: return '#6b7280';
+            }
+        }
+
+        function setupEventListeners() {
+            // Toggle switches
+            document.getElementById('oscoreToggle').addEventListener('click', function() {
+                this.classList.toggle('bg-green-600');
+                this.classList.toggle('bg-blue-600');
+                this.textContent = this.classList.contains('bg-green-600') ? 'Desativar' : 'Ativar';
+            });
+
+            document.getElementById('edhocToggle').addEventListener('click', function() {
+                this.classList.toggle('bg-green-600');
+                this.classList.toggle('bg-blue-600');
+                this.textContent = this.classList.contains('bg-green-600') ? 'Desativar' : 'Ativar';
+            });
+
+            document.getElementById('dtnToggle').addEventListener('click', function() {
+                this.classList.toggle('bg-green-600');
+                this.classList.toggle('bg-blue-600');
+                this.textContent = this.classList.contains('bg-green-600') ? 'Desativar' : 'Ativar';
+            });
+        }
+
+        function refreshStatus() {
+            // Simulate refresh
+            const button = event.target;
+            button.classList.add('pulse');
+            
+            setTimeout(() => {
+                updateMetrics();
+                initializeNetworkMap();
+                button.classList.remove('pulse');
+            }, 2000);
+        }
+
+        function configureTransport(transportId) {
+            alert(`Configurando transporte: ${transportId}`);
+            // Open configuration modal
+        }
+
+        function testTransport(transportId) {
+            alert(`Testando transporte: ${transportId}`);
+            // Run diagnostic tests
+        }
+
+        function viewLogs(transportId) {
+            alert(`Visualizando logs: ${transportId}`);
+            // Open logs modal
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+        }
+    </script>
+</body>
+</html>

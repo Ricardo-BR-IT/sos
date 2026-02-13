@@ -1,0 +1,35 @@
+open mentalesaude.com.br
+mentales
+4dSeA.3g0E6R(z
+binary
+prompt
+lcd c:\site\mentalesaude\www\ricardo\sos\deploy_stage
+cd public_html
+mkdir ricardo
+cd ricardo
+mkdir sos
+cd sos
+mput *
+cd sos
+mkdir api
+cd api
+lcd c:\site\mentalesaude\www\ricardo\sos\deploy_stage\sos\api
+mput *
+cd ..
+mkdir todos
+cd todos
+lcd c:\site\mentalesaude\www\ricardo\sos\deploy_stage\sos\todos
+mput *
+cd ..
+mkdir online
+cd online
+lcd c:\site\mentalesaude\www\ricardo\sos\deploy_stage\sos\online
+mput *
+cd ..
+cd ..
+
+mkdir downloads
+cd downloads
+lcd downloads
+mput *
+quit

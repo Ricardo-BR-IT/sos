@@ -1,0 +1,16 @@
+name: sos_calls
+version: 0.0.1
+publish_to: 'none'
+
+environment:
+  sdk: ">=2.19.0 <4.0.0"
+  flutter: ">=3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  sos_kernel:
+    path: ../sos_kernel
+
+flutter:
+  uses-material-design: true

@@ -1,0 +1,12 @@
+apply plugin: 'application'
+
+dependencies {
+    implementation project(':core')
+    implementation 'io.moquette:moquette-broker:0.16'
+    implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5'
+    implementation 'org.eclipse.californium:californium-core:3.9.0'
+}
+
+application {
+    mainClass = 'com.resgatesos.server.ServerMain'
+}

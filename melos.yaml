@@ -1,0 +1,7 @@
+name: resgate_sos_monorepo
+packages:
+  - packages/*
+  - apps/*
+scripts:
+  bootstrap:
+    run: melos bootstrap

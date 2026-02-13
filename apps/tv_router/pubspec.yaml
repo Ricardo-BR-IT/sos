@@ -1,0 +1,18 @@
+name: tv_router
+version: 0.2.0
+environment:
+  sdk: ">=2.19.0 <4.0.0"
+  flutter: ">=3.0.0"
+dependencies:
+  flutter:
+    sdk: flutter
+  sos_kernel:
+    path: ../../packages/sos_kernel
+  sos_ui:
+    path: ../../packages/sos_ui
+  sos_transports:
+    path: ../../packages/sos_transports
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter

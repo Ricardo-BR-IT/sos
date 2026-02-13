@@ -1,0 +1,26 @@
+Running Gradle task 'assembleRelease'...                        
+Warning: Flutter support for your project's Kotlin version (1.9.24) will soon be dropped. Please upgrade your Kotlin version to a version of at least 2.1.0 soon.
+Alternatively, use the flag "--android-skip-build-dependency-validation" to bypass this check.
+
+Potential fix: Your project's KGP version is typically defined in the plugins block of the `settings.gradle` file (C:\site\mentalesaude\www\ricardo\sos\apps\mobile_app\android/settings.gradle), by a plugin with the id of org.jetbrains.kotlin.android. 
+If you don't see a plugins block, your project was likely created with an older template version, in which case it is most likely defined in the top-level build.gradle file (C:\site\mentalesaude\www\ricardo\sos\apps\mobile_app\android/build.gradle) by the ext.kotlin_version property.
+
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':bonsoir_android:compileReleaseKotlin'.
+> Inconsistent JVM-target compatibility detected for tasks 'compileReleaseJavaWithJavac' (1.8) and 'compileReleaseKotlin' (21).
+
+  Consider using JVM Toolchain: https://kotl.in/gradle/jvm/toolchain
+  Learn more about JVM-target validation: https://kotl.in/gradle/jvm/target-validation 
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 34s
+Running Gradle task 'assembleRelease'...                           35,3s
+Gradle task assembleRelease failed with exit code 1

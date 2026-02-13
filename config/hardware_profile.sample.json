@@ -1,0 +1,23 @@
+{
+  "flags": [
+    "ethernet",
+    "bluetoothClassic",
+    "bluetoothMesh",
+    "lorawan",
+    "acoustic",
+    "optical",
+    "satD2d",
+    "mqtt"
+  ],
+  "transports": [
+    "bluetooth_classic",
+    "bluetooth_mesh",
+    "lorawan",
+    "sat_d2d",
+    "mqtt"
+  ],
+  "meta": {
+    "notes": "Exemplo de perfil de hardware para ativacao automatica.",
+    "owner": "Resgate SOS"
+  }
+}

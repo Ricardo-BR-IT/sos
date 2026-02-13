@@ -1,0 +1,14 @@
+Analyzing sos_transports...                                     
+
+  error - The class 'BluetoothService' doesn't have an unnamed constructor - lib\transport\ble_transport.dart:120:21 - new_with_undefined_constructor_default
+  error - The getter 'transportId' isn't defined for the type 'TransportPacket' - lib\transport\hybrid_transport.dart:53:30 - undefined_getter
+  error - The getter 'transportId' isn't defined for the type 'TransportPacket' - lib\transport\hybrid_transport.dart:54:30 - undefined_getter
+  error - The returned type 'Map<String, dynamic>' isn't returnable from a 'String' function, as required by the closure's context - lib\transport\hybrid_transport.dart:83:40 - return_of_invalid_type_from_closure
+  error - The returned type 'Map<String, dynamic>' isn't returnable from a 'String' function, as required by the closure's context - lib\transport\transport_layer.dart:35:40 - return_of_invalid_type_from_closure
+  error - The getter 'ready' isn't defined for the type 'BonsoirBroadcast' - lib\transport\wifi_direct_transport.dart:56:25 - undefined_getter
+  error - The getter 'ready' isn't defined for the type 'BonsoirDiscovery' - lib\transport\wifi_direct_transport.dart:61:25 - undefined_getter
+  error - The getter 'type' isn't defined for the type 'BonsoirDiscoveryEvent' - lib\transport\wifi_direct_transport.dart:63:19 - undefined_getter
+  error - Undefined name 'BonsoirDiscoveryEventType' - lib\transport\wifi_direct_transport.dart:63:27 - undefined_identifier
+warning - The method doesn't override an inherited method - lib\transport\wifi_direct_transport.dart:94:16 - override_on_non_overriding_member
+warning - The getter doesn't override an inherited getter - lib\transport\wifi_direct_transport.dart:99:12 - override_on_non_overriding_member
+

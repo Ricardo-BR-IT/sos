@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciativas SOS - Hardware & DIY</title>
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --card-bg: #12121a;
+            --accent-red: #ff3b3b;
+            --accent-gold: #ffd700;
+            --text-light: #e0e0e0;
+            --text-muted: #888;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--bg-dark);
+            color: var(--text-light);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            line-height: 1.6;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        h1 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--accent-red), var(--accent-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle { text-align: center; color: var(--text-muted); margin-bottom: 3rem; }
+        .initiatives-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+        .initiative-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .initiative-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(255,59,59,0.2);
+        }
+        .card-header {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, rgba(255,59,59,0.1), rgba(255,215,0,0.05));
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .card-header h2 { font-size: 1.25rem; display: flex; align-items: center; gap: 0.5rem; }
+        .card-header .icon { font-size: 1.5rem; }
+        .card-body { padding: 1.5rem; }
+        .card-body p { color: var(--text-muted); margin-bottom: 1rem; font-size: 0.95rem; }
+        .specs-list { list-style: none; margin-bottom: 1rem; }
+        .specs-list li { padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
+        .specs-list li:last-child { border-bottom: none; }
+        .specs-list strong { color: var(--accent-gold); }
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .status-planning { background: rgba(255,215,0,0.2); color: var(--accent-gold); }
+        .status-dev { background: rgba(59,130,246,0.2); color: #3b82f6; }
+        .status-ready { background: rgba(34,197,94,0.2); color: #22c55e; }
+        .btn-contribute {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, var(--accent-red), #ff6b6b);
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: opacity 0.3s;
+        }
+        .btn-contribute:hover { opacity: 0.9; }
+        footer { text-align: center; margin-top: 3rem; padding: 2rem; color: var(--text-muted); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛠️ Iniciativas de Hardware SOS</h1>
+        <p class="subtitle">Projetos DIY e hardware para expandir a rede de resgate</p>
+
+        <div class="initiatives-grid">
+            <!-- Nó Solar Passivo -->
+            <div class="initiative-card">
+                <div class="card-header">
+                    <h2><span class="icon">☀️</span> Nó Solar Passivo 5+ Anos</h2>
+                </div>
+                <div class="card-body">
+                    <p>Um nó de retransmissão que opera de forma autônoma por mais de 5 anos sem manutenção.</p>
+                    <ul class="specs-list">
+                        <li><strong>Bateria:</strong> LiFePO4 3.2V 6000mAh</li>
+                        <li><strong>Solar:</strong> Painel 1W monocristalino</li>
+                        <li><strong>SoC:</strong> ESP32-C6 (RISC-V, ultra-low power)</li>
+                        <li><strong>Rádio:</strong> SX1262 LoRa (868/915MHz)</li>
+                        <li><strong>Gabinete:</strong> IP68, UV-resistant ABS</li>
+                    </ul>
+                    <span class="status-badge status-planning">📐 Em Planejamento</span>
+                </div>
+            </div>
+
+            <!-- Antena Yagi 3D -->
+            <div class="initiative-card">
+                <div class="card-header">
+                    <h2><span class="icon">📡</span> Antena Yagi Imprimível 3D</h2>
+                </div>
+                <div class="card-body">
+                    <p>Kit de antena de alto ganho (10dBi) que pode ser impresso em qualquer impressora 3D.</p>
+                    <ul class="specs-list">
+                        <li><strong>Ganho:</strong> ~10 dBi direcional</li>
+                        <li><strong>Material:</strong> PLA/PETG + fio de cobre</li>
+                        <li><strong>Frequência:</strong> 868/915 MHz (LoRa)</li>
+                        <li><strong>Custo:</strong> < R$20 em materiais</li>
+                        <li><strong>Construção:</strong> ~2 horas</li>
+                    </ul>
+                    <span class="status-badge status-dev">🔧 Em Desenvolvimento</span>
+                    <a href="#" class="btn-contribute" style="margin-top: 1rem;">Baixar STL (em breve)</a>
+                </div>
+            </div>
+
+            <!-- SOS Live USB -->
+            <div class="initiative-card">
+                <div class="card-header">
+                    <h2><span class="icon">💾</span> SOS Live USB</h2>
+                </div>
+                <div class="card-body">
+                    <p>Transforme qualquer PC antigo em um gateway SOS completo. 3 edições disponíveis.</p>
+                    <ul class="specs-list">
+                        <li><strong>MINI:</strong> 512MB, Alpine Linux (CLI)</li>
+                        <li><strong>MEDIA:</strong> 2GB, Debian + Web Dashboard</li>
+                        <li><strong>SUPER:</strong> 8GB, Ubuntu + Docker + SDR</li>
+                    </ul>
+                    <span class="status-badge status-dev">🔧 Em Desenvolvimento</span>
+                    <a href="#" class="btn-contribute" style="margin-top: 1rem;">Ver Documentação</a>
+                </div>
+            </div>
+
+            <!-- Bridge HAM/APRS -->
+            <div class="initiative-card">
+                <div class="card-header">
+                    <h2><span class="icon">📻</span> Bridge HAM/APRS</h2>
+                </div>
+                <div class="card-body">
+                    <p>Conecte a mesh SOS à rede global de radioamadores para alcance planetário.</p>
+                    <ul class="specs-list">
+                        <li><strong>Protocolo:</strong> APRS (AX.25)</li>
+                        <li><strong>Software:</strong> Dire Wolf + Gateway SOS</li>
+                        <li><strong>Hardware:</strong> Rádio VHF + TNC ou SDR</li>
+                        <li><strong>Licença:</strong> Requer habilitação radioamador</li>
+                    </ul>
+                    <span class="status-badge status-planning">📐 Em Planejamento</span>
+                </div>
+            </div>
+
+            <!-- Wake-on-Radio -->
+            <div class="initiative-card">
+                <div class="card-header">
+                    <h2><span class="icon">⚡</span> Circuito Wake-on-Radio</h2>
+                </div>
+                <div class="card-body">
+                    <p>Detector RF ultra-low-power que acorda o SoC apenas quando um sinal específico é detectado.</p>
+                    <ul class="specs-list">
+                        <li><strong>Consumo:</strong> < 1 µA em standby</li>
+                        <li><strong>Detecção:</strong> OOK/ASK em banda ISM</li>
+                        <li><strong>IC:</strong> MAX44000 + comparador</li>
+                        <li><strong>Economia:</strong> 100x vs polling contínuo</li>
+                    </ul>
+                    <span class="status-badge status-planning">📐 Em Planejamento</span>
+                </div>
+            </div>
+
+            <!-- Reflector Passivo -->
+            <div class="initiative-card">
+                <div class="card-header">
+                    <h2><span class="icon">🪞</span> Refletores Passivos RF</h2>
+                </div>
+                <div class="card-body">
+                    <p>Superfícies metálicas estratégicas para redirecionar sinais LoRa ao redor de obstáculos.</p>
+                    <ul class="specs-list">
+                        <li><strong>Material:</strong> Alumínio ou folha metálica</li>
+                        <li><strong>Ganho:</strong> 3-6 dB reflexivo</li>
+                        <li><strong>Custo:</strong> Praticamente zero</li>
+                        <li><strong>Uso:</strong> Urbano, vales, interiores</li>
+                    </ul>
+                    <span class="status-badge status-ready">✅ Pronto para Uso</span>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Projeto SOS - Comunicação de Emergência Descentralizada</p>
+            <p style="margin-top: 0.5rem; font-size: 0.85rem;">Contribua no GitHub | Doe Hardware | Seja um Nó</p>
+        </footer>
+    </div>
+</body>
+</html>
