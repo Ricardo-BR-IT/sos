@@ -1,0 +1,73 @@
+name: Build SOS-ROM (GSI)
+
+on:
+  push:
+    paths:
+      - 'rom_builder/**'
+  workflow_dispatch:
+    inputs:
+      architecture:
+        description: 'Target architecture'
+        required: true
+        default: 'arm64'
+        type: choice
+        options:
+          - arm64
+          - arm
+          - both
+
+jobs:
+  build-rom:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360  # GSI builds can take hours
+    strategy:
+      matrix:
+        arch: ${{ github.event.inputs.architecture == 'both' && fromJSON('["arm64", "arm"]') || fromJSON(format('["{0}"]', github.event.inputs.architecture || 'arm64')) }}
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Free Disk Space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
+          df -h
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            git-core gnupg flex bison build-essential \
+            zip curl zlib1g-dev gcc-multilib g++-multilib \
+            libc6-dev-i386 libncurses5 lib32ncurses5-dev \
+            x11proto-core-dev libx11-dev lib32z1-dev \
+            libgl1-mesa-dev libxml2-utils xsltproc unzip \
+            fontconfig python3 repo
+
+      - name: Build SOS-ROM GSI (${{ matrix.arch }})
+        run: |
+          chmod +x rom_builder/build_rom.sh
+          cd rom_builder
+          ./build_rom.sh ${{ matrix.arch }}
+
+      - name: Upload ROM Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sos-rom-${{ matrix.arch }}
+          path: |
+            rom_builder/output/sos-rom-${{ matrix.arch }}.img
+            rom_builder/output/sos-rom-${{ matrix.arch }}-ota.zip
+          retention-days: 30
+
+      - name: Create Release
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: rom-${{ matrix.arch }}-latest
+          name: SOS-ROM ${{ matrix.arch }} (Latest)
+          files: |
+            rom_builder/output/sos-rom-${{ matrix.arch }}-ota.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

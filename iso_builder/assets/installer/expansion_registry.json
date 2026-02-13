@@ -1,0 +1,65 @@
+{
+    "packs": [
+        {
+            "id": "scout",
+            "name": "Scout (Base)",
+            "description": "Minimal Mesh OS. Emergency comms only.",
+            "size": "0GB (Included)",
+            "script": null,
+            "recommended_min_disk": 10,
+            "recommended_min_ram": 1
+        },
+        {
+            "id": "ranger",
+            "name": "Ranger",
+            "description": "Offline Maps (Brazil) & Medical Wiki (Kiwix).",
+            "size": " ~16GB",
+            "script": "/opt/sos-mesh/hydrate_ranger.sh",
+            "recommended_min_disk": 32,
+            "recommended_min_ram": 2
+        },
+        {
+            "id": "omega",
+            "name": "Omega",
+            "description": "AI Llama 3.2 (Offline) & Full Wikipedia.",
+            "size": " ~64GB",
+            "script": "/opt/sos-mesh/hydrate_omega.sh",
+            "recommended_min_disk": 128,
+            "recommended_min_ram": 8
+        },
+        {
+            "id": "tvbox_arm",
+            "name": "SOS-Box OS (TVBox)",
+            "description": "Dedicated ARM Gateway Image. Replaces Android with pure SOS Mesh.",
+            "size": " ~1.5GB",
+            "script": null,
+            "recommended_min_disk": 4,
+            "recommended_min_ram": 1,
+            "is_arm": true
+        },
+        {
+            "id": "sos_rom_arm64",
+            "name": "SOS-ROM (Phone ARM64)",
+            "description": "Custom Android ROM. VPN Mesh + Multi-Transport Router. For phones with Android 8+.",
+            "size": " ~800MB",
+            "script": null,
+            "recommended_min_disk": 4,
+            "recommended_min_ram": 2,
+            "is_arm": true,
+            "is_rom": true
+        },
+        {
+            "id": "sos_rom_arm32",
+            "name": "SOS-ROM (Phone ARM32)",
+            "description": "Custom Android ROM for older 32-bit phones. Lighter mesh node.",
+            "size": " ~600MB",
+            "script": null,
+            "recommended_min_disk": 2,
+            "recommended_min_ram": 1,
+            "is_arm": true,
+            "is_rom": true
+        }
+    ],
+    "auto_bridge": true,
+    "default_forwarding": true
+}

@@ -1,0 +1,135 @@
+name: Build SOS Live ISO
+
+on:
+  workflow_dispatch:
+    inputs:
+      edition:
+        description: 'ISO Edition to build'
+        required: true
+        type: choice
+        options:
+          - scout
+          - ranger
+          - omega
+          - all
+        default: scout
+
+  push:
+    branches: [main]
+    paths:
+      - 'BUILD_ISO.sh'
+      - 'iso_builder/**'
+
+jobs:
+  build-iso:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        edition: ${{ github.event.inputs.edition == 'all' && fromJSON('["scout","ranger","omega"]') || fromJSON(format('["{0}"]', github.event.inputs.edition || 'scout')) }}
+
+    name: "Build ${{ matrix.edition }} ISO"
+    timeout-minutes: 180
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Free Disk Space
+        run: |
+          echo ">>> Freeing disk space for ISO build..."
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
+          sudo rm -rf /usr/share/swift /usr/local/share/boost
+          sudo apt-get autoremove -y
+          sudo apt-get clean
+          df -h
+
+      - name: Install Build Dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq \
+            debootstrap \
+            xorriso \
+            squashfs-tools \
+            mtools \
+            dosfstools \
+            grub-pc-bin \
+            grub-efi-amd64-bin \
+            grub-common \
+            grub2-common \
+            isolinux \
+            syslinux-common \
+            syslinux-efi
+
+      - name: Create Output Directory
+        run: mkdir -p output
+
+      - name: Build ${{ matrix.edition }} ISO
+        run: |
+          chmod +x BUILD_ISO.sh
+          chmod +x iso_builder/assets/${{ matrix.edition }}/${{ matrix.edition }}_setup.sh
+          sudo ./BUILD_ISO.sh ${{ matrix.edition }}
+
+      - name: Upload ISO Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sos-${{ matrix.edition }}-iso
+          path: output/sos_${{ matrix.edition }}_*.iso
+          retention-days: 30
+          compression-level: 0  # ISOs are already compressed
+
+      - name: Calculate Checksums
+        run: |
+          cd output
+          sha256sum sos_${{ matrix.edition }}_*.iso > sos_${{ matrix.edition }}_sha256.txt
+          md5sum sos_${{ matrix.edition }}_*.iso > sos_${{ matrix.edition }}_md5.txt
+          cat sos_${{ matrix.edition }}_sha256.txt
+
+      - name: Upload Checksums
+        uses: actions/upload-artifact@v4
+        with:
+          name: sos-${{ matrix.edition }}-checksums
+          path: output/sos_${{ matrix.edition }}_*.txt
+
+  release:
+    needs: build-iso
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Download All ISO Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: iso-v0.3.0-${{ github.run_number }}
+          name: "SOS Live ISO v0.3.0 (Build #${{ github.run_number }})"
+          body: |
+            ## SOS Live ISO Release
+
+            ### Editions
+            - **Scout** (~2GB): Minimal — Kernel + Mesh + Drivers
+            - **Ranger** (~16GB): Media — + Offline Maps + Medical Wiki
+            - **Omega** (~64GB): Survival — + LLM AI + Full Wikipedia + Blueprints
+
+            ### Boot Support
+            - ✅ UEFI (GPT)
+            - ✅ Legacy BIOS (MBR)
+            - ✅ Hybrid USB (dd / Rufus / Ventoy)
+
+            ### Flash to USB
+            ```bash
+            # Linux/macOS
+            sudo dd if=sos_scout_v0.3.0.iso of=/dev/sdX bs=4M status=progress
+
+            # Windows
+            # Use Rufus (https://rufus.ie) or balenaEtcher
+            ```
+          files: artifacts/**/*
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
