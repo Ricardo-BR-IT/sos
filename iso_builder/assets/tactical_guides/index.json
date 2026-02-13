@@ -1,0 +1,68 @@
+{
+    "version": "3.0",
+    "last_updated": "2026-02-13",
+    "lib_root": "/opt/sos-mesh/tactical_guides",
+    "experts": [
+        {
+            "id": "dr_aris",
+            "name": "Dr. Aris",
+            "specialty": "Nuclear/CBRN",
+            "manual": "rescue/dr_aris_nuclear.md"
+        },
+        {
+            "id": "silva",
+            "name": "Comandante Silva",
+            "specialty": "Inundações/Defesa Civil",
+            "manual": "rescue/silva_flood.md"
+        },
+        {
+            "id": "miller",
+            "name": "Chief Miller",
+            "specialty": "Furacões/Logística",
+            "manual": "rescue/miller_hurricane.md"
+        },
+        {
+            "id": "ortega",
+            "name": "Comandante Ortega",
+            "specialty": "Terremotos/Escombros",
+            "manual": "rescue/ortega_earthquake.md"
+        },
+        {
+            "id": "liam",
+            "name": "Captain Liam",
+            "specialty": "Incêndios Florestais",
+            "manual": "rescue/liam_bushfire.md"
+        },
+        {
+            "id": "bear",
+            "name": "Ranger Bear",
+            "specialty": "Selva/Busca e Salvamento",
+            "manual": "rescue/bear_wilderness.md"
+        },
+        {
+            "id": "drake",
+            "name": "Almirante Drake",
+            "specialty": "Mar/Naufrágio",
+            "manual": "rescue/drake_sea.md"
+        },
+        {
+            "id": "fox",
+            "name": "Fox",
+            "specialty": "Prevenção Urbana/Go-Bag",
+            "manual": "prepping/fox_urban.md"
+        },
+        {
+            "id": "gaia",
+            "name": "Gaia",
+            "specialty": "Autossuficiência/Homestead",
+            "manual": "prepping/gaia_homestead.md"
+        },
+        {
+            "id": "sparky",
+            "name": "Sparky",
+            "specialty": "Infraestrutura Off-Grid",
+            "manual": "prepping/sparky_tech.md"
+        }
+    ],
+    "checklists_file": "checklists.json"
+}

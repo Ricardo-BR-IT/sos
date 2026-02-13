@@ -1,0 +1,52 @@
+{
+    "checklists": [
+        {
+            "id": "nuclear_immediate",
+            "specialist": "Dr. Aris",
+            "title": "Ação Imediata: Explosão Nuclear",
+            "items": [
+                "NÃO olhe para o clarão",
+                "Deite-se de bruços imediatamente",
+                "Fique longe de janelas (estilhaços)",
+                "Permaneça no chão por pelo menos 2 minutos"
+            ]
+        },
+        {
+            "id": "flood_prep",
+            "specialist": "Comandante Silva",
+            "title": "Prevenção: Risco de Enchente",
+            "items": [
+                "Prepare sua Go-Bag com documentos",
+                "Eleve móveis e eletrônicos",
+                "Desligue gás e eletricidade",
+                "Identifique vizinhos idosos ou com mobilidade reduzida"
+            ]
+        },
+        {
+            "id": "urban_go_bag",
+            "specialist": "Fox",
+            "title": "Mochila de 72h (Urban Go-Bag)",
+            "items": [
+                "3 litros de água por dia/pessoa",
+                "Lanterna com pilhas extra",
+                "Rádio AM/FM",
+                "Dispositivo SOS (Smartphone/Laptop) carregado",
+                "Kit de primeiros socorros",
+                "Canivete multiuso",
+                "Dinheiro em espécie (notas pequenas)"
+            ]
+        },
+        {
+            "id": "food_stockpile",
+            "specialist": "Gaia",
+            "title": "Estoque de Longo Prazo",
+            "items": [
+                "Arroz e Feijão (mínimo 20kg)",
+                "Sal e Açúcar (essencial p/ preservação)",
+                "Óleo vegetal e Mel",
+                "Sementes 'Heirloom' (não-híbridas)",
+                "Sistemas de filtragem de água (filtros de barro/cerâmica)"
+            ]
+        }
+    ]
+}
