@@ -141,6 +141,27 @@ p {
     border-radius: 4px;
 }
 
+.lang-selector {
+    background: transparent;
+    color: #fff;
+    border: 1px solid #444;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    margin-left: 1.5rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: border-color 0.2s;
+}
+
+.lang-selector:hover {
+    border-color: var(--accent-red);
+}
+
+.lang-selector option {
+    background: #111;
+    color: #fff;
+}
+
 /* Hero Section */
 .hero {
     height: 100vh;

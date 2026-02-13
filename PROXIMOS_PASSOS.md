@@ -8,7 +8,7 @@
 - ✅ `apps/wearable_app/ios/` - Estrutura completa
 - ✅ `Info.plist` configurado com todas as permissões
 - ✅ Nome do app: "Resgate SOS"
-- ✅ Versão: 0.2.0+1
+- ✅ Versão: 4.0.0+1
 
 ### 2. **Scripts de Build Criados** ✅
 - ✅ `BUILD_ANDROID.bat` - Android APK

@@ -36,7 +36,7 @@ for line in lines:
         if len(parts) == 7: # 5 data columns
             # ID, Tech, Cat, Status, Plat
             # Add Version
-            version = "v0.2.0"
+            version = "v4.0.0"
             if "planning" in line.lower():
                 version = "Planned"
             elif "partial" in line.lower():

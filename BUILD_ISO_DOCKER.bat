@@ -5,7 +5,7 @@ REM ============================================================================
 REM Usage: BUILD_ISO_DOCKER.bat [scout|ranger|omega]
 REM
 REM Requires: Docker Desktop for Windows
-REM Output:   output\sos_<edition>_v0.3.0.iso
+REM Output:   output\sos_<edition>_v4.0.0.iso
 REM ==============================================================================
 
 setlocal enabledelayedexpansion
@@ -61,7 +61,7 @@ if errorlevel 1 (
 echo.
 echo ================================================================
 echo   BUILD COMPLETE
-echo   ISO: output\sos_%EDITION%_v0.3.0.iso
+echo   ISO: output\sos_%EDITION%_v4.0.0.iso
 echo ================================================================
 echo.
 echo Flash to USB with:

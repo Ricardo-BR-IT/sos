@@ -16,19 +16,9 @@ function Portal() {
     const { locale, changeLanguage, t, languages, hasTranslation, isRTL, isAuto } = useLanguage();
     const copy = t('portal');
     const {
-        text,
-        downloads: downloadCopy,
-        quickStart,
-        commsBasics,
-        phoneticAlphabet,
-        commsCodes,
-        preparednessChecklist,
-        resilienceChecklists,
-        survivalTopics,
-        femaPreparedness,
-        playbooks,
         resources,
         injuries,
+        meshHub,
     } = copy;
     const [scenarioId, setScenarioId] = useState('isolamento');
     const [selectedResources, setSelectedResources] = useState(['solar', 'radio']);
@@ -36,6 +26,14 @@ function Portal() {
     const [telemetrySummary, setTelemetrySummary] = useState(null);
     const [telemetryError, setTelemetryError] = useState('');
     const [telemetryLoading, setTelemetryLoading] = useState(false);
+
+    // Mesh Hub State
+    const [nodes, setNodes] = useState([]);
+    const [messages, setMessages] = useState([]);
+    const [inputMessage, setInputMessage] = useState('');
+    const [activeRoom, setActiveRoom] = useState('SOS');
+    const [contacts, setContacts] = useState([]);
+    const [rooms, setRooms] = useState(['SOS', 'Community', 'Team-Alpha']);
 
     const scenario = useMemo(
         () => playbooks.find((item) => item.id === scenarioId) || playbooks[0],
@@ -105,6 +103,42 @@ function Portal() {
         } else {
             setList([...list, value]);
         }
+    };
+
+    // Simulate Mesh Activity
+    useEffect(() => {
+        const demoNodes = [
+            { id: 'Node-Alpha', lat: 10, lng: 20, type: 'Mobile', battery: 85 },
+            { id: 'Node-Bravo', lat: -15, lng: 45, type: 'Server', battery: 100 },
+            { id: 'Node-Charlie', lat: 30, lng: -10, type: 'Wearable', battery: 42 },
+        ];
+        setNodes(demoNodes);
+
+        const initialMsgs = [
+            { id: 1, from: 'System', text: 'Mesh Hub Initialized', timestamp: new Date().toLocaleTimeString(), room: 'SOS' },
+            { id: 2, from: 'Node-Alpha', text: 'All clear at sector 4', timestamp: new Date().toLocaleTimeString(), room: 'SOS' },
+        ];
+        setMessages(initialMsgs);
+
+        const demoContacts = [
+            { id: 'c1', name: 'Commander Mike', status: 'Online', distance: '120m' },
+            { id: 'c2', name: 'Rescue-1', status: 'Away', distance: '450m' },
+            { id: 'c3', name: 'Support-B', status: 'Offline', distance: 'unknown' },
+        ];
+        setContacts(demoContacts);
+    }, []);
+
+    const sendMessage = () => {
+        if (!inputMessage.trim()) return;
+        const newMsg = {
+            id: Date.now(),
+            from: 'You (Local)',
+            text: inputMessage,
+            timestamp: new Date().toLocaleTimeString(),
+            room: activeRoom,
+        };
+        setMessages([...messages, newMsg]);
+        setInputMessage('');
     };
 
     return (
@@ -197,6 +231,97 @@ function Portal() {
                                 <p>{item.text}</p>
                             </div>
                         ))}
+                    </div>
+                </section>
+
+                <section className="section" id="mesh-hub">
+                    <div className="section-title">
+                        <h2>{meshHub.title}</h2>
+                        <p>{meshHub.lead}</p>
+                    </div>
+                    <div className="mesh-container">
+                        <div className="mesh-radar-view">
+                            <h3>{meshHub.radarTitle}</h3>
+                            <div className="radar-display">
+                                <div className="radar-grid">
+                                    <div className="radar-sweep"></div>
+                                    {nodes.map((node) => (
+                                        <div
+                                            key={node.id}
+                                            className={`node-dot ${node.type.toLowerCase()}`}
+                                            style={{
+                                                left: `${50 + node.lng}%`,
+                                                top: `${50 - node.lat}%`,
+                                            }}
+                                            title={`${node.id} (${node.type}) - ${node.battery}%`}
+                                        >
+                                            <span className="node-label">{node.id}</span>
+                                        </div>
+                                    ))}
+                                    <div className="center-dot">You</div>
+                                </div>
+                            </div>
+                            <p className="note">{meshHub.radarNote}</p>
+                        </div>
+
+                        <div className="mesh-comms-view">
+                            <div className="comms-header">
+                                <h3>{meshHub.messagingTitle}</h3>
+                            </div>
+
+                            <div className="comms-main">
+                                <div className="comms-sidebar">
+                                    <div className="sidebar-section">
+                                        <h4>{meshHub.roomsTitle}</h4>
+                                        <div className="room-list">
+                                            {rooms.map(room => (
+                                                <button
+                                                    key={room}
+                                                    className={activeRoom === room ? 'active' : ''}
+                                                    onClick={() => setActiveRoom(room)}
+                                                >
+                                                    # {room}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div className="sidebar-section">
+                                        <h4>{meshHub.contactsTitle}</h4>
+                                        <div className="contact-list">
+                                            {contacts.map(contact => (
+                                                <div key={contact.id} className={`contact-item ${contact.status.toLowerCase()}`}>
+                                                    <span className="contact-name">{contact.name}</span>
+                                                    <span className="contact-dist">{contact.distance}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="comms-chat">
+                                    <div className="active-room-header"># {activeRoom}</div>
+                                    <div className="message-list">
+                                        {messages.filter(m => m.room === activeRoom || m.room === 'SOS' || activeRoom === 'SOS').map((msg) => (
+                                            <div key={msg.id} className="message-item">
+                                                <span className="msg-from">{msg.from}:</span>
+                                                <span className="msg-text">{msg.text}</span>
+                                                <span className="msg-time">{msg.timestamp}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="message-input">
+                                        <input
+                                            type="text"
+                                            placeholder={meshHub.inputPlaceholder}
+                                            value={inputMessage}
+                                            onChange={(e) => setInputMessage(e.target.value)}
+                                            onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                                        />
+                                        <button onClick={sendMessage}>{meshHub.sendBtn}</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
@@ -350,8 +475,8 @@ function Portal() {
                                     {telemetryLoading
                                         ? text.telemetry.statusLoading
                                         : telemetrySummary
-                                          ? text.telemetry.statusReady
-                                          : text.telemetry.statusUnavailable}
+                                            ? text.telemetry.statusReady
+                                            : text.telemetry.statusUnavailable}
                                 </span>
                                 <span>
                                     {text.telemetry.eventsLabel}:{' '}
@@ -573,7 +698,7 @@ function Portal() {
                         </div>
                     </div>
                 </section>
-            </div>
+            </div >
             <style jsx>{`
                 :global(body) {
                     margin: 0;
@@ -801,6 +926,235 @@ function Portal() {
                     display: block;
                     margin-top: 16px;
                     font-size: 0.9rem;
+                }
+                .mesh-container {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 30px;
+                    margin-top: 30px;
+                }
+                .mesh-radar-view, .mesh-comms-view {
+                    background: rgba(255, 255, 255, 0.03);
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    border-radius: 24px;
+                    padding: 24px;
+                    display: flex;
+                    flex-direction: column;
+                }
+                .radar-display {
+                    flex: 1;
+                    height: 300px;
+                    background: #0a0e14;
+                    border-radius: 20px;
+                    position: relative;
+                    overflow: hidden;
+                    border: 1px solid rgba(0, 161, 241, 0.2);
+                }
+                .radar-grid {
+                    width: 100%;
+                    height: 100%;
+                    position: relative;
+                    background-image: 
+                        radial-gradient(circle, rgba(0, 161, 241, 0.1) 1px, transparent 1px),
+                        radial-gradient(circle, rgba(0, 161, 241, 0.05) 1px, transparent 1px);
+                    background-size: 40px 40px, 80px 80px;
+                }
+                .radar-sweep {
+                    position: absolute;
+                    width: 100%;
+                    height: 100%;
+                    background: conic-gradient(from 0deg, rgba(0, 161, 241, 0.3) 0%, transparent 20%);
+                    animation: sweep 4s linear infinite;
+                    transform-origin: center;
+                    border-radius: 50%;
+                }
+                @keyframes sweep {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
+                }
+                .node-dot {
+                    position: absolute;
+                    width: 12px;
+                    height: 12px;
+                    background: #00ff00;
+                    border-radius: 50%;
+                    box-shadow: 0 0 10px #00ff00;
+                    transform: translate(-50%, -50%);
+                }
+                .node-dot.server { background: #ff00ff; box-shadow: 0 0 10px #ff00ff; }
+                .node-dot.wearable { background: #ffff00; box-shadow: 0 0 10px #ffff00; }
+                .center-dot {
+                    position: absolute;
+                    left: 50%;
+                    top: 50%;
+                    width: 10px;
+                    height: 10px;
+                    background: #fff;
+                    border-radius: 50%;
+                    transform: translate(-50%, -50%);
+                    font-size: 0.7rem;
+                    text-align: center;
+                    line-height: 25px;
+                }
+                .node-label {
+                    position: absolute;
+                    top: 15px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    font-size: 0.7rem;
+                    white-space: nowrap;
+                    color: rgba(255, 255, 255, 0.6);
+                }
+                .comms-header {
+                    margin-bottom: 20px;
+                }
+                .comms-main {
+                    display: grid;
+                    grid-template-columns: 200px 1fr;
+                    gap: 20px;
+                    flex: 1;
+                    min-height: 400px;
+                }
+                .comms-sidebar {
+                    border-right: 1px solid rgba(255, 255, 255, 0.1);
+                    padding-right: 20px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 30px;
+                }
+                .sidebar-section h4 {
+                    font-size: 0.7rem;
+                    text-transform: uppercase;
+                    color: rgba(255, 255, 255, 0.4);
+                    margin-bottom: 12px;
+                    letter-spacing: 1px;
+                }
+                .room-list {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 6px;
+                }
+                .room-list button {
+                    background: transparent;
+                    border: none;
+                    color: rgba(255, 255, 255, 0.7);
+                    text-align: left;
+                    padding: 8px 12px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-size: 0.85rem;
+                    transition: all 0.2s;
+                }
+                .room-list button:hover {
+                    background: rgba(255, 255, 255, 0.05);
+                    color: #fff;
+                }
+                .room-list button.active {
+                    background: rgba(0, 161, 241, 0.15);
+                    color: #00a1f1;
+                    font-weight: 600;
+                }
+                .contact-list {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 12px;
+                }
+                .contact-item {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    font-size: 0.8rem;
+                }
+                .contact-name { color: rgba(255, 255, 255, 0.8); }
+                .contact-dist { font-size: 0.7rem; color: rgba(255, 255, 255, 0.4); }
+                .contact-item::before {
+                    content: '';
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                    margin-right: 8px;
+                }
+                .contact-item.online::before { background: #00ff00; box-shadow: 0 0 5px #00ff00; }
+                .contact-item.away::before { background: #ffaa00; }
+                .contact-item.offline::before { background: #555; }
+
+                .comms-chat {
+                    display: flex;
+                    flex-direction: column;
+                    background: rgba(0, 0, 0, 0.2);
+                    border-radius: 16px;
+                    padding: 16px;
+                }
+                .active-room-header {
+                    font-weight: bold;
+                    margin-bottom: 16px;
+                    padding-bottom: 8px;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                    color: #00a1f1;
+                }
+                .message-list {
+                    flex: 1;
+                    height: 300px;
+                    overflow-y: auto;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                    padding-right: 10px;
+                }
+                .message-item {
+                    font-size: 0.85rem;
+                    background: rgba(255, 255, 255, 0.04);
+                    padding: 10px 14px;
+                    border-radius: 12px;
+                    border: 1px solid rgba(255, 255, 255, 0.05);
+                }
+                .msg-from { font-weight: bold; color: #7dd3ff; margin-right: 8px; }
+                .msg-time { font-size: 0.7rem; color: rgba(255, 255, 255, 0.3); float: right; }
+                .message-input {
+                    margin-top: 20px;
+                    display: flex;
+                    gap: 12px;
+                }
+                .message-input input {
+                    flex: 1;
+                    background: rgba(255, 255, 255, 0.05);
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    color: #fff;
+                    padding: 12px 16px;
+                    border-radius: 12px;
+                    outline: none;
+                    font-size: 0.9rem;
+                    transition: border-color 0.2s;
+                }
+                .message-input input:focus {
+                    border-color: #00a1f1;
+                }
+                .message-input button {
+                    background: #00a1f1;
+                    color: #fff;
+                    border: none;
+                    padding: 0 24px;
+                    border-radius: 12px;
+                    cursor: pointer;
+                    font-weight: 600;
+                    transition: background 0.2s;
+                }
+                .message-input button:hover {
+                    background: #0081c1;
+                }
+                @media (max-width: 900px) {
+                    .mesh-container { grid-template-columns: 1fr; }
+                    .comms-main { grid-template-columns: 1fr; }
+                    .comms-sidebar { border-right: none; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 20px; }
+                }
+                .radar-sweep {
+                    position: absolute;
+                    width: 100%;
+                    height: 100%;
+                    background: conic-gradient(from 0deg, rgba(0, 161, 241, 0.3) 0%, transparent 20%);
+                    animation: sweep 4s linear infinite;
+                    transform-origin: center;
+                    border-radius: 50%;
                 }
                 .wizard select {
                     width: 100%;

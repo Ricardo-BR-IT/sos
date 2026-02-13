@@ -27,7 +27,7 @@ for line in lines:
                        # If we want 6 columns: | ID | Tech | Cat | Status | Plat | Ver | -> 7 pipes.
             
             # Implementation status logic
-            version = "v0.2.0"
+            version = "v4.0.0"
             
             if "planning" in line:
                 version = "Planned"

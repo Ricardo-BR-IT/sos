@@ -145,6 +145,19 @@ export const translations = {
                     'Compartilhe apenas informacoes essenciais',
                 ],
             },
+            meshHub: {
+                title: 'Centro de Comando Mesh',
+                lead: 'Visualize o alcance da rede e comunique-se com outros nos em tempo real.',
+                radarTitle: 'Radar de Nos (Peermap)',
+                radarNote: 'Mostrando nos ativos via Wi-Fi e Bluetooth.',
+                radarEmpty: 'Nenhum no detectado no momento.',
+                messagingTitle: 'Mensagens e Chat',
+                inputPlaceholder: 'Escreva uma mensagem...',
+                sendBtn: 'Enviar',
+                roomsTitle: 'Salas de Bate-papo',
+                contactsTitle: 'Contatos Proximos',
+                broadcastLabel: 'Transmitir para todos (SOS)',
+            },
             downloads: {
                 targets: {
                     android: 'Android Mobile',
@@ -889,6 +902,19 @@ export const translations = {
                     'Record events to improve response',
                     'Share only essential information',
                 ],
+            },
+            meshHub: {
+                title: 'Mesh Command Center',
+                lead: 'Visualize network range and communicate with other nodes in real-time.',
+                radarTitle: 'Node Radar (Peermap)',
+                radarNote: 'Showing active nodes via Wi-Fi and Bluetooth.',
+                radarEmpty: 'No nodes detected at the moment.',
+                messagingTitle: 'Messaging & Chat',
+                inputPlaceholder: 'Type a message...',
+                sendBtn: 'Send',
+                roomsTitle: 'Chat Rooms',
+                contactsTitle: 'Nearby Contacts',
+                broadcastLabel: 'Broadcast to all (SOS)',
             },
             downloads: {
                 targets: {
