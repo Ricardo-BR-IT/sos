@@ -31,8 +31,7 @@ public class ServerMain {
         int meshPort = readPort(flags, "mesh-port", 4000, "SOS_MESH_PORT");
         int httpPort = readPort(flags, "port", 8080, "SOS_HTTP_PORT");
         String webRoot = resolveWebRoot(flags);
-        int telemetryRetention =
-                readInt(flags, "telemetry-retention", 7, "SOS_TELEMETRY_RETENTION_DAYS");
+        int telemetryRetention = readInt(flags, "telemetry-retention", 7, "SOS_TELEMETRY_RETENTION_DAYS");
         Path dataDir = resolveDataDir(flags);
         boolean mqttEnabled = readBool(flags, "mqtt-enable", true, "SOS_MQTT_ENABLE");
         int mqttPort = readInt(flags, "mqtt-port", 1883, "SOS_MQTT_PORT");
@@ -52,9 +51,7 @@ public class ServerMain {
                     "mesh_message",
                     Map.of(
                             "type", envelope.type,
-                            "sender", envelope.sender
-                    )
-            ));
+                            "sender", envelope.sender)));
         });
         node.start();
 
@@ -69,15 +66,12 @@ public class ServerMain {
                         "mqttEnabled", mqttEnabled,
                         "mqttPort", mqttPort,
                         "coapEnabled", coapEnabled,
-                        "coapPort", coapPort
-                )
-        ));
+                        "coapPort", coapPort)));
         appendTelemetry(telemetry, buildTelemetryEvent(
                 telemetrySession,
                 node.getPublicId(),
                 "hardware_profile",
-                hardwareProfile.toMap()
-        ));
+                hardwareProfile.toMap()));
 
         HttpServer server = HttpServer.create(new InetSocketAddress(httpPort), 0);
         server.createContext("/status", exchange -> {
@@ -273,15 +267,13 @@ public class ServerMain {
                         telemetrySession,
                         node.getPublicId(),
                         "mqtt_start",
-                        Map.of("port", mqttPort, "host", mqttHost)
-                ));
+                        Map.of("port", mqttPort, "host", mqttHost)));
             } catch (IOException e) {
                 appendTelemetry(telemetry, buildTelemetryEvent(
                         telemetrySession,
                         node.getPublicId(),
                         "mqtt_error",
-                        Map.of("error", e.toString())
-                ));
+                        Map.of("error", e.toString())));
             }
         }
 
@@ -293,8 +285,7 @@ public class ServerMain {
                     telemetrySession,
                     node.getPublicId(),
                     "coap_start",
-                    Map.of("port", coapPort)
-            ));
+                    Map.of("port", coapPort)));
         }
 
         Path staticRoot = Paths.get(webRoot).toAbsolutePath().normalize();
@@ -450,7 +441,8 @@ public class ServerMain {
 
     private static int parseIntParam(Map<String, String> params, String key, int fallback) {
         String value = params.get(key);
-        if (value == null || value.trim().isEmpty()) return fallback;
+        if (value == null || value.trim().isEmpty())
+            return fallback;
         try {
             return Integer.parseInt(value.trim());
         } catch (NumberFormatException e) {
@@ -459,7 +451,8 @@ public class ServerMain {
     }
 
     private static Instant parseInstantParam(String value) {
-        if (value == null || value.trim().isEmpty()) return null;
+        if (value == null || value.trim().isEmpty())
+            return null;
         try {
             return Instant.parse(value.trim());
         } catch (Exception e) {
@@ -500,7 +493,8 @@ public class ServerMain {
 
     private static List<Map<String, Object>> parseTelemetryPayload(String body) {
         Object decoded = new Gson().fromJson(body, Object.class);
-        if (decoded == null) return Collections.emptyList();
+        if (decoded == null)
+            return Collections.emptyList();
         if (decoded instanceof Map) {
             return List.of((Map<String, Object>) decoded);
         }
@@ -521,8 +515,7 @@ public class ServerMain {
             String sessionId,
             String nodeId,
             String event,
-            Map<String, Object> data
-    ) {
+            Map<String, Object> data) {
         Map<String, Object> payload = new HashMap<>();
         payload.put("schema", 1);
         payload.put("ts", Instant.now().toString());
@@ -586,22 +579,36 @@ public class ServerMain {
 
     private static String contentTypeFor(Path file) {
         String name = file.getFileName().toString().toLowerCase();
-        if (name.endsWith(".html")) return "text/html; charset=utf-8";
-        if (name.endsWith(".css")) return "text/css; charset=utf-8";
-        if (name.endsWith(".js")) return "application/javascript; charset=utf-8";
-        if (name.endsWith(".json")) return "application/json; charset=utf-8";
-        if (name.endsWith(".png")) return "image/png";
-        if (name.endsWith(".jpg") || name.endsWith(".jpeg")) return "image/jpeg";
-        if (name.endsWith(".svg")) return "image/svg+xml";
-        if (name.endsWith(".ico")) return "image/x-icon";
-        if (name.endsWith(".zip")) return "application/zip";
-        if (name.endsWith(".apk")) return "application/vnd.android.package-archive";
-        if (name.endsWith(".jar")) return "application/java-archive";
+        if (name.endsWith(".html"))
+            return "text/html; charset=utf-8";
+        if (name.endsWith(".css"))
+            return "text/css; charset=utf-8";
+        if (name.endsWith(".js"))
+            return "application/javascript; charset=utf-8";
+        if (name.endsWith(".json"))
+            return "application/json; charset=utf-8";
+        if (name.endsWith(".png"))
+            return "image/png";
+        if (name.endsWith(".jpg") || name.endsWith(".jpeg"))
+            return "image/jpeg";
+        if (name.endsWith(".svg"))
+            return "image/svg+xml";
+        if (name.endsWith(".ico"))
+            return "image/x-icon";
+        if (name.endsWith(".zip"))
+            return "application/zip";
+        if (name.endsWith(".apk"))
+            return "application/vnd.android.package-archive";
+        if (name.endsWith(".jar"))
+            return "application/java-archive";
         return "application/octet-stream";
     }
 
     private static void send(HttpExchange exchange, int code, String text) throws IOException {
         byte[] bytes = text.getBytes(StandardCharsets.UTF_8);
+        exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+        exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+        exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type, Authorization");
         exchange.sendResponseHeaders(code, bytes.length);
         try (OutputStream os = exchange.getResponseBody()) {
             os.write(bytes);
@@ -611,6 +618,7 @@ public class ServerMain {
     private static void sendJson(HttpExchange exchange, Object payload) throws IOException {
         String json = new Gson().toJson(payload);
         exchange.getResponseHeaders().add("Content-Type", "application/json");
+        exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
         send(exchange, 200, json);
     }
 }

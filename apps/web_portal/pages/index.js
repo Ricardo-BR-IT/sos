@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import React, { useEffect, useMemo, useState } from 'react';
 import { LanguageProvider, useLanguage } from '../contexts/LanguageContext';
+import { BrowserSense } from '../lib/browser_discovery';
 
 const edition = process.env.NEXT_PUBLIC_EDITION || 'standard';
 
@@ -19,6 +20,9 @@ function Portal() {
         resources,
         injuries,
         meshHub,
+        playbooks,
+        quickStart,
+        text = copy.text || {},
     } = copy;
     const [scenarioId, setScenarioId] = useState('isolamento');
     const [selectedResources, setSelectedResources] = useState(['solar', 'radio']);
@@ -34,6 +38,8 @@ function Portal() {
     const [activeRoom, setActiveRoom] = useState('SOS');
     const [contacts, setContacts] = useState([]);
     const [rooms, setRooms] = useState(['SOS', 'Community', 'Team-Alpha']);
+    const [isScanning, setIsScanning] = useState(false);
+    const [discoveryStatus, setDiscoveryStatus] = useState('');
 
     const scenario = useMemo(
         () => playbooks.find((item) => item.id === scenarioId) || playbooks[0],
@@ -141,6 +147,47 @@ function Portal() {
         setInputMessage('');
     };
 
+    const handleBluetoothScan = async () => {
+        setIsScanning(true);
+        setDiscoveryStatus('Scanning Bluetooth...');
+        try {
+            const pos = await BrowserSense.getCurrentPosition().catch(() => ({ lat: 0, lng: 0 }));
+            const device = await BrowserSense.scanBluetooth();
+            if (device) {
+                const newNode = {
+                    id: device.id,
+                    lat: (pos.lat + (Math.random() * 2 - 1) * 0.01).toFixed(4),
+                    lng: (pos.lng + (Math.random() * 2 - 1) * 0.01).toFixed(4),
+                    type: 'BLE-Found',
+                    battery: 100,
+                    name: device.name
+                };
+                setNodes(prev => [...prev, newNode]);
+                setDiscoveryStatus(`Added node: ${device.name}`);
+            }
+        } catch (e) {
+            setDiscoveryStatus('Bluetooth scan failed.');
+        } finally {
+            setIsScanning(false);
+        }
+    };
+
+    const handleNetworkProbe = async () => {
+        setIsScanning(true);
+        setDiscoveryStatus('Probing network...');
+        await BrowserSense.probeLocalNetwork((newNode) => {
+            setNodes(prev => {
+                if (prev.find(n => n.id === newNode.id)) return prev;
+                return [...prev, newNode];
+            });
+            setDiscoveryStatus(`Found Hub at ${newNode.url}`);
+        });
+        setTimeout(() => {
+            setIsScanning(false);
+            setDiscoveryStatus('');
+        }, 5000);
+    };
+
     return (
         <>
             <Head>
@@ -241,7 +288,28 @@ function Portal() {
                     </div>
                     <div className="mesh-container">
                         <div className="mesh-radar-view">
-                            <h3>{meshHub.radarTitle}</h3>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <h3>{meshHub.radarTitle}</h3>
+                                <div className="discovery-actions" style={{ display: 'flex', gap: '8px' }}>
+                                    <button
+                                        onClick={handleBluetoothScan}
+                                        className="btn ghost small"
+                                        disabled={isScanning}
+                                        title="Scan via Bluetooth"
+                                    >
+                                        📡 BLE
+                                    </button>
+                                    <button
+                                        onClick={handleNetworkProbe}
+                                        className="btn ghost small"
+                                        disabled={isScanning}
+                                        title="Probe Network"
+                                    >
+                                        🌐 Probe
+                                    </button>
+                                </div>
+                            </div>
+                            {discoveryStatus && <p className="discovery-note" style={{ fontSize: '0.8rem', color: '#7dd3ff', margin: '4px 0' }}>{discoveryStatus}</p>}
                             <div className="radar-display">
                                 <div className="radar-grid">
                                     <div className="radar-sweep"></div>
