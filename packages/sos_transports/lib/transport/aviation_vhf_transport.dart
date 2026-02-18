@@ -8,6 +8,7 @@ import 'transport_packet.dart';
 /// Aviation VHF Transport Layer.
 /// Emergency communications on aviation frequencies (121.5 MHz).
 class AviationVhfTransport extends TransportLayer {
+  // ignore: unused_field
   final String _serialPort;
   final double _frequency; // MHz
 

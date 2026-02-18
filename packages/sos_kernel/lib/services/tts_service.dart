@@ -8,8 +8,11 @@ class TtsService {
 
   bool _isSpeaking = false;
   double _volume = 1.0;
+  // ignore: unused_field
   double _rate = 1.0;
+  // ignore: unused_field
   double _pitch = 1.0;
+  // ignore: unused_field
   String _voice = 'default';
 
   TtsService({TtsProvider provider = TtsProvider.onDevice})

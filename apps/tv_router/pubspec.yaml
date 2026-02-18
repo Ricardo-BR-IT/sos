@@ -1,5 +1,6 @@
 name: tv_router
-version: 4.0.0
+version: 1.0.0+1
+publish_to: none
 environment:
   sdk: ">=2.19.0 <4.0.0"
   flutter: ">=3.0.0"
@@ -16,3 +17,4 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_lints: ^6.0.0

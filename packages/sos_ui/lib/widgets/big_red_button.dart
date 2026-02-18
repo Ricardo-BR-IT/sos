@@ -51,7 +51,7 @@ class _BigRedButtonState extends State<BigRedButton>
             boxShadow: _isFocused
                 ? [
                     BoxShadow(
-                      color: Colors.red.withOpacity(0.5),
+                      color: Colors.red.withValues(alpha: 0.5),
                       blurRadius: 20,
                       spreadRadius: 5,
                     )

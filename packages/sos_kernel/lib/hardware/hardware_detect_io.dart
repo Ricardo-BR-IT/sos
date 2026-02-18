@@ -48,9 +48,6 @@ Future<HardwareProfile> detectHardware(String? configPath) async {
   );
 }
 
-bool _hasEthernetInterface(List<String> interfaces) =>
-    _hasEthernetName(interfaces);
-
 Future<List<String>> _detectInterfaces() async {
   try {
     final ifaces = await NetworkInterface.list();

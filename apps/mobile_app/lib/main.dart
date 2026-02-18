@@ -26,7 +26,7 @@ Uri? _resolveTelemetryEndpoint() {
 
 class MobileApp extends StatefulWidget {
   final SosCore core;
-  const MobileApp({Key? key, required this.core}) : super(key: key);
+  const MobileApp({super.key, required this.core});
 
   @override
   State<MobileApp> createState() => _MobileAppState();
@@ -35,7 +35,7 @@ class MobileApp extends StatefulWidget {
 class _MobileAppState extends State<MobileApp> {
   final TelemetryService _telemetry = TelemetryService.instance;
   MeshService? _meshService;
-  HardwareProfile? _hardwareProfile;
+
   bool _isMeshReady = false;
   String _statusKey = "initializingSecurity";
   String _errorMsg = "";
@@ -69,7 +69,7 @@ class _MobileAppState extends State<MobileApp> {
   Future<void> _initMesh() async {
     try {
       final profile = await HardwareProfile.detect();
-      _hardwareProfile = profile;
+
       final meshService = MeshService(
         core: widget.core,
         transport: HybridTransport(activation: profile.activation),
@@ -194,6 +194,8 @@ class _MobileAppState extends State<MobileApp> {
         ),
       ),
     );
+
+    if (!mounted) return;
 
     if (result != null && result is String) {
       setState(() {

@@ -8,6 +8,7 @@ import 'transport_packet.dart';
 /// CB Radio Transport Layer.
 /// Citizen Band radio for emergency communications.
 class CbRadioTransport extends TransportLayer {
+  // ignore: unused_field
   final String _serialPort;
   final int _channel; // 1-40 channels
 

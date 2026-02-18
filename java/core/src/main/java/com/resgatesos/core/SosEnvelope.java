@@ -1,7 +1,6 @@
 package com.resgatesos.core;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.util.HashMap;
@@ -18,10 +17,11 @@ public class SosEnvelope {
     public Map<String, Object> payload;
     public String signature;
 
-    public SosEnvelope() {}
+    public SosEnvelope() {
+    }
 
     public SosEnvelope(int v, String type, String sender, long timestamp,
-                       Map<String, Object> payload, String signature) {
+            Map<String, Object> payload, String signature) {
         this.v = v;
         this.type = type;
         this.sender = sender;
@@ -70,7 +70,9 @@ public class SosEnvelope {
         envelope.sender = obj.get("sender").getAsString();
         envelope.timestamp = obj.get("timestamp").getAsLong();
         envelope.signature = obj.get("signature").getAsString();
-        envelope.payload = new Gson().fromJson(obj.get("payload"), Map.class);
+        envelope.payload = new Gson().fromJson(obj.get("payload"),
+                new com.google.gson.reflect.TypeToken<Map<String, Object>>() {
+                }.getType());
         return envelope;
     }
 
@@ -84,7 +86,8 @@ public class SosEnvelope {
         return t == null || t.isEmpty() || "*".equals(t);
     }
 
-    private static String canonicalBody(int v, String type, String sender, long timestamp, Map<String, Object> payload) {
+    private static String canonicalBody(int v, String type, String sender, long timestamp,
+            Map<String, Object> payload) {
         Map<String, Object> body = new HashMap<>();
         body.put("v", v);
         body.put("type", type);

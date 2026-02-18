@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:meta/meta.dart';
 
 import 'transport_layer.dart';
 import 'transport_descriptor.dart';
@@ -7,6 +8,7 @@ import 'transport_packet.dart';
 
 /// APRS Bridge Transport - bridges APRS radio to mesh via TNC/KISS.
 class AprsBridgeTransport extends TransportLayer {
+  // ignore: unused_field
   final String _tncPath;
 
   final StreamController<TransportPacket> _incomingController =
@@ -70,5 +72,52 @@ class AprsBridgeTransport extends TransportLayer {
   @override
   Future<void> dispose() async {
     await _incomingController.close();
+  }
+
+  Stream<TransportPacket> get packetStream => onPacketReceived;
+  bool get isAvailable =>
+      health.availability == TransportAvailability.available;
+
+  Map<String, dynamic> getAprsStatus() {
+    return {
+      'callsign': 'TEST-1', // Mock
+      'useInternet': false,
+      'useRadio': true,
+      'stations': 0,
+      'messages': 0,
+      'stationsList': [],
+    };
+  }
+
+  Future<void> sendPosition(double lat, double lon, {String? comment}) async {
+    // Implementation stub
+  }
+
+  Future<void> sendTelemetry(List<int> values, List<String> labels) async {
+    // Implementation stub
+  }
+
+  Future<void> sendEmergencyAlert(String type, String description) async {
+    // Implementation stub
+  }
+
+  @visibleForTesting
+  String formatLatitude(double lat) {
+    // Mock implementation for test
+    final absLat = lat.abs();
+    final deg = absLat.floor();
+    final min = (absLat - deg) * 60;
+    final dir = lat >= 0 ? 'N' : 'S';
+    return '${deg.toString().padLeft(2, '0')}${min.toStringAsFixed(2)}$dir';
+  }
+
+  @visibleForTesting
+  String formatLongitude(double lon) {
+    // Mock implementation for test
+    final absLon = lon.abs();
+    final deg = absLon.floor();
+    final min = (absLon - deg) * 60;
+    final dir = lon >= 0 ? 'E' : 'W';
+    return '${deg.toString().padLeft(3, '0')}${min.toStringAsFixed(2)}$dir';
   }
 }

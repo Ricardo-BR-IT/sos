@@ -1,11 +1,11 @@
 name: sos_transports
 description: SOS Multi-Protocol Transport Layer
-version: 1.0.0
+version: 1.5.0+1
 environment:
   sdk: ">=2.19.0 <4.0.0"
 dependencies:
   flutter_blue_plus: ^2.1.1
-  bonsoir: ^6.0.1
+  bonsoir: ^6.0.0
   permission_handler: ^12.0.1
   mqtt_client: ^10.0.0
   win_ble: ^1.1.1
@@ -22,6 +22,7 @@ dependencies:
   shelf_web_socket: ^3.0.0
   serial_port_win32: any
   http: ^1.1.0
+  meta: ^1.7.0
 
 dev_dependencies:
   flutter_test:

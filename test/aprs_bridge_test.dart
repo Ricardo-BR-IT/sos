@@ -6,6 +6,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sos_transports/sos_transports.dart';
+import 'package:sos_transports/transport/aprs_bridge_transport.dart';
 
 void main() {
   group('AprsBridgeTransport', () {
@@ -40,22 +41,25 @@ void main() {
     });
 
     test('should parse APRS position packet correctly', () {
-      const aprsPacket = 'PY1ABC>APRS,TCPIP*:!2330.55S/04639.18W_SOS Mesh Node Active\r\n';
-      
+      const aprsPacket =
+          'PY1ABC>APRS,TCPIP*:!2330.55S/04639.18W_SOS Mesh Node Active\r\n';
+
       final parsed = AprsPacket.parse(aprsPacket);
-      
+
       expect(parsed, isNotNull);
       expect(parsed!.source, equals('PY1ABC'));
       expect(parsed.destination, equals('APRS'));
       expect(parsed.type, equals(AprsDataType.position));
-      expect(parsed.position, equals('2330.55S/04639.18W_SOS Mesh Node Active'));
+      expect(
+          parsed.position, equals('2330.55S/04639.18W_SOS Mesh Node Active'));
     });
 
     test('should parse APRS message packet correctly', () {
-      const aprsPacket = 'PY1ABC>APRS,TCPIP*:SOS-1     :Emergency response needed\r\n';
-      
+      const aprsPacket =
+          'PY1ABC>APRS,TCPIP*:SOS-1     :Emergency response needed\r\n';
+
       final parsed = AprsPacket.parse(aprsPacket);
-      
+
       expect(parsed, isNotNull);
       expect(parsed!.source, equals('PY1ABC'));
       expect(parsed.destination, equals('SOS-1'));
@@ -65,10 +69,11 @@ void main() {
     });
 
     test('should parse APRS telemetry packet correctly', () {
-      const aprsPacket = 'PY1ABC>APRS,TCPIP*:T#123,100,200,300,400,500,00000000\r\n';
-      
+      const aprsPacket =
+          'PY1ABC>APRS,TCPIP*:T#123,100,200,300,400,500,00000000\r\n';
+
       final parsed = AprsPacket.parse(aprsPacket);
-      
+
       expect(parsed, isNotNull);
       expect(parsed!.source, equals('PY1ABC'));
       expect(parsed.destination, equals('APRS'));
@@ -81,7 +86,7 @@ void main() {
       // Test positive latitude
       final lat1 = transport._formatLatitude(23.5092);
       expect(lat1, equals('2330.55N'));
-      
+
       // Test negative latitude
       final lat2 = transport._formatLatitude(-23.5092);
       expect(lat2, equals('2330.55S'));
@@ -91,7 +96,7 @@ void main() {
       // Test positive longitude
       final lon1 = transport._formatLongitude(46.6530);
       expect(lon1, equals('04639.18E'));
-      
+
       // Test negative longitude
       final lon2 = transport._formatLongitude(-46.6530);
       expect(lon2, equals('04639.18W'));
@@ -103,7 +108,7 @@ void main() {
         destination: 'SOS-2',
         text: 'Test message',
       );
-      
+
       final aprsString = messagePacket.toAprsString();
       expect(aprsString, contains('TEST-1>APRS,TCPIP*'));
       expect(aprsString, contains('SOS-2     :Test message'));
@@ -114,7 +119,7 @@ void main() {
         source: 'TEST-1',
         values: [100, 200, 300, 400, 500],
       );
-      
+
       final aprsString = telemetryPacket.toAprsString();
       expect(aprsString, contains('TEST-1>APRS,TCPIP*:T#'));
       expect(aprsString, contains('100,200,300,400,500'));
@@ -126,21 +131,22 @@ void main() {
         emergencyType: 'MEDICAL',
         description: 'Medical assistance required',
       );
-      
+
       final aprsString = emergencyPacket.toAprsString();
       expect(aprsString, contains('TEST-1>APRS,TCPIP*'));
-      expect(aprsString, contains('EMERGENCY: MEDICAL - Medical assistance required'));
+      expect(aprsString,
+          contains('EMERGENCY: MEDICAL - Medical assistance required'));
     });
 
     test('should handle broadcast messages', () async {
       final packets = <TransportPacket>[];
       transport.packetStream.listen(packets.add);
-      
+
       await transport.initialize();
-      
+
       const testMessage = 'Test broadcast message';
       await transport.broadcast(testMessage);
-      
+
       // In mock mode, should not throw errors
       expect(transport.isAvailable, isTrue);
     });
@@ -148,18 +154,18 @@ void main() {
     test('should handle direct messages', () async {
       final packets = <TransportPacket>[];
       transport.packetStream.listen(packets.add);
-      
+
       await transport.initialize();
-      
+
       final testPacket = TransportPacket(
         senderId: 'TEST-1',
         recipientId: 'SOS-2',
         type: SosPacketType.message,
         payload: {'message': 'Test direct message'},
       );
-      
+
       await transport.send(testPacket);
-      
+
       // In mock mode, should not throw errors
       expect(transport.isAvailable, isTrue);
     });
@@ -172,11 +178,11 @@ void main() {
         timestamp: DateTime.now(),
         path: ['APRS', 'TCPIP'],
       );
-      
+
       // Simulate adding station through packet processing
       const aprsPacket = 'PY1ABC>APRS,TCPIP*:!2330.55S/04639.18W_Active\r\n';
       final parsed = AprsPacket.parse(aprsPacket);
-      
+
       expect(parsed, isNotNull);
       expect(parsed!.source, equals('PY1ABC'));
       expect(parsed.type, equals(AprsDataType.position));
@@ -184,7 +190,7 @@ void main() {
 
     test('should provide APRS status information', () {
       final status = transport.getAprsStatus();
-      
+
       expect(status['callsign'], equals('TEST-1'));
       expect(status['useInternet'], isFalse);
       expect(status['useRadio'], isFalse);
@@ -195,37 +201,39 @@ void main() {
 
     test('should handle position sending', () async {
       await transport.initialize();
-      
-      await transport.sendPosition(-23.5092, -46.6530, comment: 'Test position');
-      
+
+      await transport.sendPosition(-23.5092, -46.6530,
+          comment: 'Test position');
+
       // Should not throw errors in mock mode
       expect(transport.isAvailable, isTrue);
     });
 
     test('should handle telemetry sending', () async {
       await transport.initialize();
-      
+
       final values = [100, 200, 300, 400, 500];
       final labels = ['Voltage', 'Current', 'Power', 'Temp', 'Humidity'];
-      
+
       await transport.sendTelemetry(values, labels);
-      
+
       // Should not throw errors in mock mode
       expect(transport.isAvailable, isTrue);
     });
 
     test('should handle emergency alerts', () async {
       await transport.initialize();
-      
-      await transport.sendEmergencyAlert('MEDICAL', 'Medical assistance required');
-      
+
+      await transport.sendEmergencyAlert(
+          'MEDICAL', 'Medical assistance required');
+
       // Should not throw errors in mock mode
       expect(transport.isAvailable, isTrue);
     });
 
     test('should cleanup old data', () async {
       await transport.initialize();
-      
+
       // Simulate old data cleanup
       // In real implementation, this would remove stations older than 24 hours
       expect(transport.isAvailable, isTrue);
@@ -240,16 +248,16 @@ void main() {
         useInternet: false, // Use mock to avoid actual connection
         useRadio: false,
       );
-      
+
       expect(() => errorTransport.initialize(), returnsNormally);
     });
 
     test('should dispose resources correctly', () async {
       await transport.initialize();
       expect(transport.isAvailable, isTrue);
-      
+
       await transport.dispose();
-      
+
       // After disposal, transport should be cleaned up
       // Note: isAvailable might still be true as it's a cached state
       // In real implementation, you'd check for null sockets/processes
@@ -265,7 +273,7 @@ void main() {
         'SRC>DEST:', // Empty data
         'SRC>DEST:INVALID', // Invalid format
       ];
-      
+
       for (final packet in malformedPackets) {
         final parsed = AprsPacket.parse(packet);
         expect(parsed, isNull, reason: 'Should return null for: $packet');
@@ -278,7 +286,7 @@ void main() {
         'PY1ABC>APRS,WIDE2-2:!2330.55S/04639.18W_Test',
         'PY1ABC>APRS,RELAY,WIDE1-1,WIDE2-2:!2330.55S/04639.18W_Test',
       ];
-      
+
       for (final packet in packets) {
         final parsed = AprsPacket.parse(packet);
         expect(parsed, isNotNull, reason: 'Should parse: $packet');
@@ -298,7 +306,7 @@ void main() {
         timestamp: DateTime.now(),
         path: ['APRS', 'TCPIP'],
       );
-      
+
       expect(station.callsign, equals('PY1ABC'));
       expect(station.position, equals('2330.55S/04639.18W'));
       expect(station.status, equals('Active'));
@@ -314,7 +322,7 @@ void main() {
         destination: 'SOS-1',
         text: 'Test message',
       );
-      
+
       expect(message.id, equals('123'));
       expect(message.destination, equals('SOS-1'));
       expect(message.text, equals('Test message'));
@@ -328,7 +336,7 @@ void main() {
         values: [100, 200, 300, 400, 500],
         labels: ['V', 'A', 'W', 'T', 'H'],
       );
-      
+
       expect(telemetry.sequence, equals(123));
       expect(telemetry.values, equals([100, 200, 300, 400, 500]));
       expect(telemetry.labels, equals(['V', 'A', 'W', 'T', 'H']));

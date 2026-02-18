@@ -7,8 +7,7 @@ class IdentityScreen extends StatefulWidget {
   final SosCore core;
   final MeshService mesh;
 
-  const IdentityScreen({Key? key, required this.core, required this.mesh})
-      : super(key: key);
+  const IdentityScreen({super.key, required this.core, required this.mesh});
 
   @override
   State<IdentityScreen> createState() => _IdentityScreenState();

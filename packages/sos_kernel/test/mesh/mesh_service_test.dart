@@ -61,10 +61,8 @@ class TestTransport extends BaseTransport {
   @override
   Future<void> broadcast(String message) async {}
 
-  @override
   Future<void> toggle() async {}
 
-  @override
   bool get enabled => true;
 
   @override

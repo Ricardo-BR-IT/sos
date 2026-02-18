@@ -2,7 +2,7 @@
 /// Transport configuration and status dashboard UI components
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+
 import 'package:lucide_flutter/lucide_flutter.dart';
 
 import '../models/transport_status.dart';
@@ -103,14 +103,19 @@ class _TransportDashboardState extends State<TransportDashboard>
       body: Column(
         children: [
           _buildOverviewCards(),
+          TabBar(
+            controller: _tabController,
+            labelColor: Colors.blue,
+            unselectedLabelColor: Colors.grey,
+            tabs: const [
+              Tab(text: 'Status', icon: Icon(LucideIcons.activity)),
+              Tab(text: 'Configuração', icon: Icon(LucideIcons.settings)),
+              Tab(text: 'Diagnostics', icon: Icon(LucideIcons.stethoscope)),
+            ],
+          ),
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              tabs: const [
-                Tab(text: 'Status', icon: Icon(LucideIcons.activity)),
-                Tab(text: 'Configuração', icon: Icon(LucideIcons.settings)),
-                Tab(text: 'Diagnostics', icon: Icon(LucideIcons.stethoscope)),
-              ],
               children: [
                 _buildStatusTab(),
                 _buildConfigTab(),
@@ -118,8 +123,8 @@ class _TransportDashboardState extends State<TransportDashboard>
               ],
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -151,7 +156,7 @@ class _TransportDashboardState extends State<TransportDashboard>
           _buildOverviewCard(
             'Taxa de Erro',
             '${_getErrorRate().toStringAsFixed(1)}%',
-            LucideIcons.alertTriangle,
+            Icons.warning_amber,
             Colors.red,
           ),
         ],
@@ -159,7 +164,8 @@ class _TransportDashboardState extends State<TransportDashboard>
     );
   }
 
-  Widget _buildOverviewCard(String title, String value, IconData icon, Color color) {
+  Widget _buildOverviewCard(
+      String title, String value, IconData icon, Color color) {
     return Container(
       width: 160,
       margin: const EdgeInsets.only(right: 12),
@@ -188,9 +194,9 @@ class _TransportDashboardState extends State<TransportDashboard>
           Text(
             value,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
           ),
         ],
       ),
@@ -211,7 +217,8 @@ class _TransportDashboardState extends State<TransportDashboard>
     );
   }
 
-  Widget _buildTransportStatusCard(String transportId, bool isEnabled, TransportStatus status) {
+  Widget _buildTransportStatusCard(
+      String transportId, bool isEnabled, TransportStatus status) {
     final transportInfo = _getTransportInfo(transportId);
     final statusColor = _getStatusColor(status);
 
@@ -256,7 +263,8 @@ class _TransportDashboardState extends State<TransportDashboard>
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: statusColor,
                     borderRadius: BorderRadius.circular(12),
@@ -275,9 +283,11 @@ class _TransportDashboardState extends State<TransportDashboard>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildStatusRow('Plataformas', transportInfo['platforms']),
+                      _buildStatusRow(
+                          'Plataformas', transportInfo['platforms']),
                       _buildStatusRow('Nós', '${_getNodeCount(transportId)}'),
-                      _buildStatusRow('Mensagens', '${_getMessageCount(transportId)}'),
+                      _buildStatusRow(
+                          'Mensagens', '${_getMessageCount(transportId)}'),
                     ],
                   ),
                 ),
@@ -302,8 +312,8 @@ class _TransportDashboardState extends State<TransportDashboard>
           Text(
             value,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
         ],
       ),
@@ -340,7 +350,8 @@ class _TransportDashboardState extends State<TransportDashboard>
                 child: Column(
                   children: [
                     _buildConfigField('Prioridade', config.priority),
-                    _buildConfigField('Timeout', '${config.timeout.inSeconds}s'),
+                    _buildConfigField(
+                        'Timeout', '${config.timeout.inSeconds}s'),
                     _buildConfigField('Retry', '${config.retryAttempts}'),
                     _buildConfigField('Buffer', '${config.bufferSize}KB'),
                     if (config.customParameters.isNotEmpty)
@@ -383,8 +394,8 @@ class _TransportDashboardState extends State<TransportDashboard>
           Text(
             value,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.primary,
-            ),
+                  color: Theme.of(context).colorScheme.primary,
+                ),
           ),
         ],
       ),
@@ -418,7 +429,8 @@ class _TransportDashboardState extends State<TransportDashboard>
                     initialValue: entry.value.toString(),
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
                     ),
                   ),
                 ),
@@ -478,8 +490,11 @@ class _TransportDashboardState extends State<TransportDashboard>
 
   Widget _buildDiagnosticItem(String test, Map<String, dynamic> result) {
     final status = result['status'] as String;
-    final statusColor = status == 'pass' ? Colors.green : 
-                       status == 'fail' ? Colors.red : Colors.orange;
+    final statusColor = status == 'pass'
+        ? Colors.green
+        : status == 'fail'
+            ? Colors.red
+            : Colors.orange;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
@@ -506,9 +521,9 @@ class _TransportDashboardState extends State<TransportDashboard>
             child: Text(
               status.toUpperCase(),
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: statusColor,
-                fontWeight: FontWeight.bold,
-              ),
+                    color: statusColor,
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
           ),
           if (result['message'] != null)
@@ -548,7 +563,7 @@ class _TransportDashboardState extends State<TransportDashboard>
       },
       'ethernet': {
         'name': 'Ethernet LAN',
-        'icon': LucideIcons.ethernet,
+        'icon': Icons.cable,
         'platforms': 'Desktop, Server',
       },
       'lorawan': {
@@ -573,27 +588,28 @@ class _TransportDashboardState extends State<TransportDashboard>
       },
       'zigbee': {
         'name': 'Zigbee',
-        'icon': LucideIcons.router,
+        'icon': Icons.router, // Fallback to Material
         'platforms': 'IoT',
       },
     };
 
-    return info[transportId] ?? {
-      'name': 'Unknown',
-      'icon': LucideIcons.helpCircle,
-      'platforms': 'Unknown',
-    };
+    return info[transportId] ??
+        {
+          'name': 'Unknown',
+          'icon': Icons.help_outline, // Fallback to Material
+          'platforms': 'Unknown',
+        };
   }
 
   Color _getStatusColor(TransportStatus status) {
-    switch (status) {
-      case TransportStatus.online:
+    switch (status.state) {
+      case TransportConnectionState.online:
         return Colors.green;
-      case TransportStatus.offline:
+      case TransportConnectionState.offline:
         return Colors.red;
-      case TransportStatus.connecting:
+      case TransportConnectionState.connecting:
         return Colors.orange;
-      case TransportStatus.error:
+      case TransportConnectionState.error:
         return Colors.red;
       default:
         return Colors.grey;
@@ -601,14 +617,14 @@ class _TransportDashboardState extends State<TransportDashboard>
   }
 
   String _getStatusText(TransportStatus status) {
-    switch (status) {
-      case TransportStatus.online:
+    switch (status.state) {
+      case TransportConnectionState.online:
         return 'Online';
-      case TransportStatus.offline:
+      case TransportConnectionState.offline:
         return 'Offline';
-      case TransportStatus.connecting:
+      case TransportConnectionState.connecting:
         return 'Conectando';
-      case TransportStatus.error:
+      case TransportConnectionState.error:
         return 'Erro';
       default:
         return 'Desconhecido';
@@ -617,20 +633,20 @@ class _TransportDashboardState extends State<TransportDashboard>
 
   int _getTotalConnectedNodes() {
     return _transportStatus.values
-        .where((status) => status == TransportStatus.online)
-        .fold(0, (sum, status) => sum + (status.connectedNodes ?? 0));
+        .where((status) => status.state == TransportConnectionState.online)
+        .fold(0, (sum, status) => sum + status.connectedNodes);
   }
 
   int _getTotalMessagesPerMinute() {
     return _transportStatus.values
-        .fold(0, (sum, status) => sum + (status.messagesPerMinute ?? 0));
+        .fold(0, (sum, status) => sum + status.messagesPerMinute);
   }
 
   double _getErrorRate() {
     final totalMessages = _getTotalMessagesPerMinute();
     final totalErrors = _transportStatus.values
-        .fold(0, (sum, status) => sum + (status.errorCount ?? 0));
-    
+        .fold(0, (sum, status) => sum + status.errorCount);
+
     return totalMessages > 0 ? (totalErrors / totalMessages) * 100 : 0.0;
   }
 
@@ -645,9 +661,15 @@ class _TransportDashboardState extends State<TransportDashboard>
   Map<String, dynamic> _getDiagnostics(String transportId) {
     // Simulated diagnostic results
     return {
-      'Conectividade': {'status': 'pass', 'message': 'Conexão estabelecida com sucesso'},
+      'Conectividade': {
+        'status': 'pass',
+        'message': 'Conexão estabelecida com sucesso'
+      },
       'Handshake': {'status': 'pass', 'message': 'Handshake completo'},
-      'Throughput': {'status': 'pass', 'message': 'Throughput dentro do esperado'},
+      'Throughput': {
+        'status': 'pass',
+        'message': 'Throughput dentro do esperado'
+      },
       'Latência': {'status': 'pass', 'message': 'Latência < 100ms'},
       'Segurança': {'status': 'pass', 'message': 'Criptografia funcionando'},
     };
@@ -676,7 +698,7 @@ class _TransportDashboardState extends State<TransportDashboard>
         setState(() {
           _transportStatus[transportId] = TransportStatus.connecting;
         });
-        
+
         Future.delayed(Duration(seconds: 1), () {
           setState(() {
             _transportStatus[transportId] = TransportStatus.online;
@@ -705,21 +727,24 @@ class _TransportDashboardState extends State<TransportDashboard>
 
   void _resetConfig(String transportId) {
     setState(() {
-      _transportConfig[transportId] = TransportConfig.defaultConfig(transportId);
+      _transportConfig[transportId] =
+          TransportConfig.defaultConfig(transportId);
     });
   }
 
   void _saveConfig(String transportId) {
     // Save configuration
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: 'Configuração salva com sucesso'),
+      const SnackBar(content: Text('Configuração salva com sucesso')),
     );
   }
 
   void _runDiagnostics(String transportId) {
     // Run diagnostics
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: 'Executando diagnósticos para ${_getTransportInfo(transportId)['name']}'),
+      SnackBar(
+          content: Text(
+              'Executando diagnósticos para ${_getTransportInfo(transportId)['name']}')),
     );
   }
 }

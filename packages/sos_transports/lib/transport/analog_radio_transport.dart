@@ -9,6 +9,7 @@ import 'transport_packet.dart';
 /// AM/FM/DRM radio for emergency broadcast and reception.
 class AnalogRadioTransport extends TransportLayer {
   final AnalogRadioMode _mode;
+  // ignore: unused_field
   final double _frequency; // MHz
 
   final StreamController<TransportPacket> _incomingController =

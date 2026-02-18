@@ -8,6 +8,7 @@ import 'transport_packet.dart';
 /// Cellular Transport Layer.
 /// Full cellular stack: 2G/3G/4G/5G via AT command interface.
 class CellularTransport extends TransportLayer {
+  // ignore: unused_field
   final String _serialPort;
   final CellularGeneration _preferredGen;
 

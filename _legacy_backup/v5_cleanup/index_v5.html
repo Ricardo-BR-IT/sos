@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOS TACTICAL GATEWAY // V5</title>
+    <link rel="stylesheet" href="assets/css/terminal.css">
+    <meta http-equiv="refresh" content="300">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <div>
+                <h1>RESGATE SOS <span class="cursor"></span></h1>
+                <div style="font-size: 0.8rem; color: #888;">UNIFIED TACTICAL MESH // V5.0.0-ALPHA</div>
+            </div>
+            <div class="status-badge">SYSTEM ONLINE</div>
+        </header>
+
+        <div class="grid">
+            <!-- PRIMARY ACTION -->
+            <div class="panel" style="grid-column: 1 / -1; border-color: var(--terminal-green);">
+                <h2>>> ACTIVE SESSION INJECTION</h2>
+                <p>Initialize Web-based Tactical Node. Standard execution context. No installation required.</p>
+                <a href="web/" class="btn-large">INITIALIZE WEB NODE_</a>
+            </div>
+
+            <!-- DOWNLOADS -->
+            <div class="panel">
+                <h2>>> DEPLOYMENT ARTIFACTS</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>PLATFORM</th>
+                            <th>TYPE</th>
+                            <th>LINK</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>ANDROID</td>
+                            <td>APK (Mobile)</td>
+                            <td><a href="#">[DOWNLOAD]</a></td>
+                        </tr>
+                        <tr>
+                            <td>WINDOWS</td>
+                            <td>EXE (Station)</td>
+                            <td><a href="#">[DOWNLOAD]</a></td>
+                        </tr>
+                        <tr>
+                            <td>LINUX</td>
+                            <td>SRC (Server)</td>
+                            <td><a href="#">[SOURCE]</a></td>
+                        </tr>
+                        <tr>
+                            <td>LIVE ISO</td>
+                            <td>BOOT (Hybrid)</td>
+                            <td><a href="#">[GET ISO]</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- TELEMETRY PREVIEW -->
+            <div class="panel">
+                <h2>>> LIVE TELEMETRY</h2>
+                <div id="telemetry-box">
+                    <div>NODES_TRACKED: <span id="node-count">--</span></div>
+                    <div>MESH_EVENTS: <span id="event-count">--</span></div>
+                    <div>LAST_HEARTBEAT: <span id="last-seen">Scanning...</span></div>
+                    <br>
+                    <div style="font-size: 0.7rem; color: #666;">
+                        [INFO] SIGNAL DETECTED ON CHANNEL 1 (LORA)<br>
+                        [INFO] MESH RELAY ACTIVE AT /api/mesh_relay.php<br>
+                        [WARN] WEAK SIGNAL FROM NODE-AF12
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MOCK TERMINAL FOOTER -->
+        <div class="log-window" id="console-log">
+            > SYSTEM BOOT SEQUENCE INITIATED...<br>
+            > MOUNTING VOLUME /ricardo/sos/... [OK]<br>
+            > CHECKING MESH CONFIGURATION... [FOUND 3 PEERS]<br>
+            > ESTABLISHING SECURE HANDSHAKE... [OK]<br>
+            > LISTENING FOR INCOMING PACKETS...<br>
+        </div>
+
+        <footer style="margin-top: 20px; font-size: 0.7rem; color: #444; text-align: right;">
+            SES-186 PROTOCOL // OPEN SOURCE HUMANITARIAN TECH // 2026
+        </footer>
+    </div>
+
+    <script>
+        // Simple script to animate the console and fetch basic stats
+        const logContainer = document.getElementById('console-log');
+        const logs = [
+            "SCANNING FREQUENCIES...",
+            "UPDATING NEIGHBOR TABLE...",
+            "PACKET 0xFE RECEIVED FROM 192.168.1.X",
+            "SYNCING DHT...",
+            "OPTIMIZING ROUTE TO GATEWAY..."
+        ];
+
+        setInterval(() => {
+            const msg = logs[Math.floor(Math.random() * logs.length)];
+            const time = new Date().toISOString().split('T')[1].split('.')[0];
+            const newLog = document.createElement('div');
+            newLog.innerHTML = `> [${time}] ${msg}`;
+            logContainer.insertBefore(newLog, logContainer.firstChild);
+            if (logContainer.children.length > 8) {
+                logContainer.removeChild(logContainer.lastChild);
+            }
+        }, 2000);
+
+        // Fetch Mesh Stats (Real)
+        async function fetchStats() {
+            try {
+                const res = await fetch('api/mesh_relay.php');
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('node-count').innerText = data.nodes ? data.nodes.length : 0;
+                    document.getElementById('event-count').innerText = Math.floor(Math.random() * 500) + 100; // Mock for now
+                    document.getElementById('last-seen').innerText = new Date().toLocaleTimeString();
+                }
+            } catch (e) {
+                document.getElementById('last-seen').innerText = "OFFLINE";
+            }
+        }
+        fetchStats();
+        setInterval(fetchStats, 5000);
+    </script>
+
+</body>
+
+</html>

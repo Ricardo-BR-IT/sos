@@ -8,7 +8,9 @@ import 'transport_packet.dart';
 /// DAB/DAB+ Digital Radio Transport Layer.
 /// Broadcast emergency alerts via digital radio.
 class DabTransport extends TransportLayer {
+  // ignore: unused_field
   final String _multiplexId;
+  // ignore: unused_field
   final String _serviceId;
 
   final StreamController<TransportPacket> _incomingController =

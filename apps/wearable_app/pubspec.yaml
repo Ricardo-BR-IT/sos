@@ -1,7 +1,7 @@
 name: wearable_app
 description: Resgate SOS for Wear OS (Smartwatches)
 publish_to: 'none'
-version: 4.0.0
+version: 1.0.0+1
 
 environment:
   sdk: ">=2.19.0 <4.0.0"

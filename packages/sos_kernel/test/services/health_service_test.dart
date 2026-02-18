@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:sos_kernel/sos_kernel.dart';
-import 'package:sos_kernel/services/health_service.dart';
 
 // Mock classes
 class MockMeshService extends Mock implements MeshService {

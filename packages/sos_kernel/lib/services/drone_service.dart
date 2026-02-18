@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:sos_kernel/sos_kernel.dart';
-import '../protocol/robotics_protocol.dart';
 
 /// Service to manage decentralized drone fleets and robotics telemetry.
 class DroneService {

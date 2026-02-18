@@ -41,12 +41,15 @@ public class CoapBridge {
                     exchange.respond(CoAP.ResponseCode.BAD_REQUEST, "Empty payload");
                     return;
                 }
-                Map<String, Object> data = gson.fromJson(body, Map.class);
+                Map<String, Object> data = gson.fromJson(body,
+                        new com.google.gson.reflect.TypeToken<Map<String, Object>>() {
+                        }.getType());
                 if (data == null || !data.containsKey("type")) {
                     exchange.respond(CoAP.ResponseCode.BAD_REQUEST, "Missing type");
                     return;
                 }
                 String type = data.get("type").toString();
+                @SuppressWarnings("unchecked")
                 Map<String, Object> payload = data.containsKey("payload")
                         ? (Map<String, Object>) data.get("payload")
                         : new HashMap<>();

@@ -1,5 +1,5 @@
 name: sos_calls
-version: 0.0.1
+version: 15.0.0+1
 publish_to: 'none'
 
 environment:

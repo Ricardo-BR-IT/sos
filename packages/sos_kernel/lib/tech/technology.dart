@@ -22,6 +22,7 @@ enum TechnologyCategory {
   emerging,
   navigation,
   broadcast,
+  wan,
   other,
 }
 
@@ -46,4 +47,3 @@ class SosTechnology {
     this.platforms = const [],
   });
 }
-

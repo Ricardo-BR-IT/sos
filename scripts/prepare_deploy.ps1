@@ -23,3 +23,6 @@ if (Test-Path $outMini) {
 if (Test-Path $outServer) {
   Copy-Item -Recurse -Force $outServer (Join-Path $deploy "server")
 }
+if (Test-Path (Join-Path $Root "mesh_relay.php")) {
+  Copy-Item -Force (Join-Path $Root "mesh_relay.php") $deploy
+}

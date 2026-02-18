@@ -23,7 +23,7 @@ Uri? _resolveTelemetryEndpoint() {
 
 class TvRouterApp extends StatefulWidget {
   final SosCore core;
-  const TvRouterApp({Key? key, required this.core}) : super(key: key);
+  const TvRouterApp({super.key, required this.core});
 
   @override
   State<TvRouterApp> createState() => _TvRouterAppState();
@@ -32,7 +32,7 @@ class TvRouterApp extends StatefulWidget {
 class _TvRouterAppState extends State<TvRouterApp> {
   final TelemetryService _telemetry = TelemetryService.instance;
   MeshService? _meshService;
-  HardwareProfile? _hardwareProfile;
+
   bool _ready = false;
   String _status = 'Inicializando...';
   Offset _uiOffset = Offset.zero;
@@ -82,7 +82,7 @@ class _TvRouterAppState extends State<TvRouterApp> {
   Future<void> _initMesh() async {
     try {
       final profile = await HardwareProfile.detect();
-      _hardwareProfile = profile;
+
       final meshService = MeshService(
         core: widget.core,
         transport: HybridTransport(activation: profile.activation),

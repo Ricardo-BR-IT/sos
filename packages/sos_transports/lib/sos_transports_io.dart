@@ -21,12 +21,15 @@ export 'transport/optical_transport.dart';
 export 'transport/udp_transport.dart';
 export 'transport/mqtt_transport.dart';
 export 'transport/zigbee_transport.dart';
+export 'transport/webrtc_transport.dart';
 // Wave 7
 export 'transport/aprs_transport.dart';
 export 'transport/aprs_serial_transport.dart';
 export 'transport/iridium_serial_transport.dart';
 // Wave 8
 export 'transport/thread_matter_transport.dart';
+export 'transport/dtn_transport.dart';
+export 'transport/secure_transport.dart';
 export 'transport/nfc_transport.dart';
 export 'transport/quic_transport.dart';
 export 'transport/ipfs_transport.dart';

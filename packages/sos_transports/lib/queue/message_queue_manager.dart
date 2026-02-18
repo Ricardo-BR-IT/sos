@@ -121,7 +121,7 @@ class _QueuedMessage {
   final SosPacketType type;
   final Map<String, dynamic> payload;
   final int ttl;
-  int retryCount;
+  int retryCount = 0;
 
   _QueuedMessage({
     required this.senderId,

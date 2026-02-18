@@ -20,6 +20,9 @@ on:
       - 'BUILD_ISO.sh'
       - 'iso_builder/**'
 
+permissions:
+  contents: write
+
 jobs:
   build-iso:
     runs-on: ubuntu-latest

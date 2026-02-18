@@ -1,0 +1,18 @@
+name: sos_root
+description: Root project for SOS Mesh
+environment:
+  sdk: ">=2.18.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  sos_kernel:
+    path: packages/sos_kernel
+  sos_transports:
+    path: packages/sos_transports
+  sos_experimental:
+    path: packages/sos_experimental
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter

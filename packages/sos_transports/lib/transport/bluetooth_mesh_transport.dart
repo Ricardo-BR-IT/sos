@@ -126,7 +126,9 @@ class BluetoothMeshTransport extends BaseTransport {
 
   Future<void> _connectMeshNode(BluetoothDevice device) async {
     try {
-      await device.connect(timeout: const Duration(seconds: 20));
+      await device.connect(
+          timeout: const Duration(seconds: 20),
+          license: 'com.resgatesos.sos' as dynamic);
 
       final services = await device.discoverServices();
       final meshService = services.firstWhere(

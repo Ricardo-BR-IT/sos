@@ -1,0 +1,48 @@
+[
+    {
+        "platform": "WEB (Tactical)",
+        "version": "v7.2",
+        "protocol": "HTTPS / JSON",
+        "capabilities": [
+            "Radar",
+            "Chat (Relay)",
+            "Map"
+        ],
+        "interop": [
+            "Android v5 (via Gateway)",
+            "Web v7+"
+        ],
+        "status": "ACTIVE",
+        "link": "index.php"
+    },
+    {
+        "platform": "ANDROID (Legacy)",
+        "version": "v5.0",
+        "protocol": "Bluetooth / Wi-Fi Direct",
+        "capabilities": [
+            "Offline Mesh",
+            "Text"
+        ],
+        "interop": [
+            "Android v5",
+            "LoRa bridge"
+        ],
+        "status": "LEGACY",
+        "link": "#"
+    },
+    {
+        "platform": "LORA NODE (ESP32)",
+        "version": "v2.1",
+        "protocol": "LoRa 915MHz",
+        "capabilities": [
+            "Long Range",
+            "Telemetry"
+        ],
+        "interop": [
+            "Any Gateway",
+            "ESP32"
+        ],
+        "status": "DEV",
+        "link": "#"
+    }
+]

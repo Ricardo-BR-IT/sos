@@ -1,0 +1,11 @@
+name: sos_experimental
+description: Experimental transport implementations for SOS Mesh
+version: 0.0.1
+environment:
+  sdk: ">=2.19.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  sos_transports:
+    path: ../sos_transports

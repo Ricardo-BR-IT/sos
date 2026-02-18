@@ -180,5 +180,5 @@ void _node(XmlBuilder builder, String name, String value) {
 String? _text(XmlElement element, String name) {
   final node = element.getElement(name);
   if (node == null) return null;
-  return node.text.trim().isEmpty ? null : node.text.trim();
+  return node.innerText.trim().isEmpty ? null : node.innerText.trim();
 }

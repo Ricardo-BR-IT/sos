@@ -12,11 +12,11 @@ class ChatScreen extends StatefulWidget {
   final String targetName;
 
   const ChatScreen({
-    Key? key,
+    super.key,
     required this.mesh,
     required this.targetId,
     this.targetName = "Peer",
-  }) : super(key: key);
+  });
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();

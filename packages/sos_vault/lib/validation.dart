@@ -15,7 +15,7 @@ class Validation {
     final sig = base64Decode(signature);
     final pk = base64Decode(publicKey);
     return sodium.crypto.sign.verifyDetached(
-      message: data,
+      message: Uint8List.fromList(data),
       signature: sig,
       publicKey: pk,
     );

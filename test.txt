@@ -1,0 +1,2 @@
+Server Check: OK
+Path: /ricardo/sos/test.txt

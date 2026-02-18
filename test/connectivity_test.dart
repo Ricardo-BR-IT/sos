@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sos_transports/sos_transports.dart';
+import 'package:sos_transports/sos_transports_io.dart';
 
 void main() {
   group('Connectivity Tests', () {
@@ -22,10 +22,11 @@ void main() {
 
     test('Supported transports list is correct', () {
       final supportedTransports = TransportRegistry.getSupportedTransports();
-      
+
       expect(supportedTransports.length, greaterThan(10));
-      
-      final transportIds = supportedTransports.map((t) => t.descriptor.id).toList();
+
+      final transportIds =
+          supportedTransports.map((t) => t.descriptor.id).toList();
       expect(transportIds, contains('ble'));
       expect(transportIds, contains('bluetooth_classic'));
       expect(transportIds, contains('bluetooth_mesh'));
@@ -37,10 +38,11 @@ void main() {
 
     test('Technology registry is consistent', () {
       final allTechs = TechRegistry.all;
-      
+
       expect(allTechs.length, equals(186));
-      
-      final supportedCount = allTechs.where((t) => t.status == TechnologyStatus.supported).length;
+
+      final supportedCount =
+          allTechs.where((t) => t.status == TechnologyStatus.supported).length;
       expect(supportedCount, equals(15));
     });
   });

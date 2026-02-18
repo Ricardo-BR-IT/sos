@@ -1,0 +1,182 @@
+:root {
+    --bg-color: #0a0a0a;
+    --terminal-green: #0f0;
+    --terminal-dim: #003300;
+    --alert-red: #ff0000;
+    --warning-yellow: #ffff00;
+    --scan-line: rgba(0, 255, 0, 0.1);
+}
+
+@font-face {
+    font-family: 'Terminus';
+    src: local('Courier New'), monospace;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--terminal-green);
+    font-family: 'Terminus', 'Courier New', monospace;
+    margin: 0;
+    padding: 20px;
+    overflow-x: hidden;
+    line-height: 1.4;
+    text-shadow: 0 0 5px var(--terminal-green);
+}
+
+/* CRT Effect */
+body::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    z-index: 2;
+    background-size: 100% 2px, 3px 100%;
+    pointer-events: none;
+}
+
+a {
+    color: var(--terminal-green);
+    text-decoration: none;
+    border-bottom: 1px dashed var(--terminal-green);
+    transition: all 0.2s;
+}
+
+a:hover {
+    background: var(--terminal-green);
+    color: #000;
+    box-shadow: 0 0 10px var(--terminal-green);
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+    border: 2px solid var(--terminal-dim);
+    padding: 20px;
+    background: rgba(0, 20, 0, 0.3);
+}
+
+header {
+    border-bottom: 2px solid var(--terminal-green);
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+h1 {
+    font-size: 2.5rem;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.status-badge {
+    border: 1px solid var(--terminal-green);
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    animation: blink 2s infinite;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.panel {
+    border: 1px solid var(--terminal-dim);
+    padding: 15px;
+    background: rgba(0, 10, 0, 0.5);
+}
+
+.panel h2 {
+    margin-top: 0;
+    border-bottom: 1px dashed var(--terminal-dim);
+    padding-bottom: 10px;
+    font-size: 1.2rem;
+    color: var(--warning-yellow);
+    text-shadow: 0 0 5px var(--warning-yellow);
+}
+
+.btn-large {
+    display: block;
+    width: 100%;
+    padding: 20px;
+    text-align: center;
+    border: 2px solid var(--terminal-green);
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-top: 20px;
+    background: rgba(0, 255, 0, 0.1);
+    cursor: pointer;
+}
+
+.btn-large:hover {
+    background: var(--terminal-green);
+    color: #000;
+    box-shadow: 0 0 20px var(--terminal-green);
+}
+
+.log-window {
+    height: 150px;
+    overflow-y: hidden;
+    font-size: 0.8rem;
+    color: #888;
+    border-top: 1px solid var(--terminal-dim);
+    margin-top: 20px;
+    padding-top: 10px;
+}
+
+.cursor {
+    display: inline-block;
+    width: 10px;
+    height: 1.2em;
+    background: var(--terminal-green);
+    animation: blink 1s step-end infinite;
+    vertical-align: bottom;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+.glitch {
+    animation: glitch 1s linear infinite;
+}
+
+@keyframes glitch {
+    2%, 64% { transform: translate(2px,0) skew(0deg); }
+    4%, 60% { transform: translate(-2px,0) skew(0deg); }
+    62% { transform: translate(0,0) skew(5deg); }
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+th, td {
+    text-align: left;
+    padding: 8px;
+    border-bottom: 1px solid var(--terminal-dim);
+}
+
+th {
+    color: #888;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}

@@ -1,0 +1,81 @@
+name: build-apps-cross-platform
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/mobile_app/**'
+      - 'apps/desktop_station/**'
+      - '.github/workflows/build-apps-cross-platform.yml'
+
+jobs:
+  linux_desktop:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        edition: [mini, standard, server]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Install Linux toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev
+
+      - name: Build Linux desktop (${{ matrix.edition }})
+        working-directory: apps/desktop_station
+        run: |
+          flutter pub get
+          flutter build linux --release --dart-define=EDITION=${{ matrix.edition }}
+
+      - name: Package Linux artifact
+        run: |
+          mkdir -p ci_artifacts/linux/${{ matrix.edition }}
+          cp -r apps/desktop_station/build/linux/x64/release/bundle/* ci_artifacts/linux/${{ matrix.edition }}/
+
+      - name: Upload Linux artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-linux-${{ matrix.edition }}
+          path: ci_artifacts/linux/${{ matrix.edition }}
+
+  ios_mobile:
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        edition: [mini, standard, server]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Build iOS (no codesign) (${{ matrix.edition }})
+        working-directory: apps/mobile_app
+        run: |
+          flutter pub get
+          flutter build ios --release --no-codesign --dart-define=EDITION=${{ matrix.edition }}
+
+      - name: Package iOS artifact
+        run: |
+          mkdir -p ci_artifacts/ios/${{ matrix.edition }}
+          cp -r apps/mobile_app/build/ios/iphoneos/* ci_artifacts/ios/${{ matrix.edition }}/
+
+      - name: Upload iOS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-ios-${{ matrix.edition }}
+          path: ci_artifacts/ios/${{ matrix.edition }}

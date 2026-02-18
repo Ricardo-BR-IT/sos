@@ -1,7 +1,8 @@
 /// ble_transport.dart
 /// PRODUCTION IMPLEMENTATION with flutter_blue_plus (Mobile) and desktop BLE support.
 
-import 'dart:async';
+import 'dart:async' as async;
+import 'dart:async' hide StreamController;
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -34,7 +35,7 @@ class BleTransport extends BaseTransport {
   final int maxChunkSize;
 
   String? _localId;
-  StreamSubscription<List<ScanResult>>? _scanSubscription;
+  async.StreamSubscription<List<ScanResult>>? _scanSubscription;
   bool _isAdvertising = false;
   bool _running = false;
 
@@ -42,6 +43,15 @@ class BleTransport extends BaseTransport {
   final Map<DeviceIdentifier, _BlePeer> _peers = {};
   final Map<DeviceIdentifier, String> _buffers = {};
   final Set<DeviceIdentifier> _connecting = {};
+
+  // Incoming packet stream
+  final async.StreamController<TransportPacket> _incomingController =
+      async.StreamController<TransportPacket>.broadcast();
+
+  // Override to return our controller stream
+  @override
+  async.Stream<TransportPacket> get onPacketReceived =>
+      _incomingController.stream;
 
   BleTransport({
     String? serviceUuid,
@@ -342,7 +352,8 @@ class BleTransport extends BaseTransport {
 
   Future<void> _connectDevice(BluetoothDevice device) async {
     try {
-      await device.connect(timeout: const Duration(seconds: 20));
+      await device.connect(
+          timeout: const Duration(seconds: 20), license: License.values.first);
     } catch (e) {
       reportError('BLE connect failed: $e');
       return;

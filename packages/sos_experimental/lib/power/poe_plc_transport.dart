@@ -3,19 +3,14 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
 import 'dart:io';
+import 'dart:math';
 
-import '../base_transport.dart';
-import '../transport_descriptor.dart';
-import '../transport_packet.dart';
+import 'package:sos_transports/transport/base_transport.dart';
+import 'package:sos_transports/transport/transport_descriptor.dart';
+import 'package:sos_transports/transport/transport_packet.dart';
 
-enum PowerTechnology {
-  poe,
-  plc_narrowband,
-  plc_g3,
-  plc_prime,
-}
+enum PowerTechnology { poe, plc_narrowband, plc_g3, plc_prime }
 
 class PowerTransport extends BaseTransport {
   static const TransportDescriptor kDescriptor = TransportDescriptor(
@@ -71,7 +66,7 @@ class PowerTransport extends BaseTransport {
           await _initializePLC_PRIME();
           break;
       }
-      
+
       markAvailable();
       reportStatus('Power transport initialized: ${technology.toString()}');
     } catch (e) {
@@ -98,14 +93,12 @@ class PowerTransport extends BaseTransport {
       ];
 
       _process = await Process.start('poe-controller', args);
-      
-      _stdoutSubscription = _process!.stdout
-          .transform(utf8.decoder)
-          .listen(_handlePoEOutput);
-      
-      _stderrSubscription = _process!.stderr
-          .transform(utf8.decoder)
-          .listen(_handlePoEError);
+
+      _stdoutSubscription =
+          _process!.stdout.transform(utf8.decoder).listen(_handlePoEOutput);
+
+      _stderrSubscription =
+          _process!.stderr.transform(utf8.decoder).listen(_handlePoEError);
 
       reportStatus('PoE controller started on $interfaceName');
     } catch (e) {
@@ -115,7 +108,7 @@ class PowerTransport extends BaseTransport {
 
   Future<void> _startMockPoE() async {
     reportStatus('Using mock PoE controller');
-    
+
     // Simulate PoE port detection
     Timer.periodic(Duration(seconds: 10), (_) {
       _simulatePoEDetection();
@@ -125,12 +118,12 @@ class PowerTransport extends BaseTransport {
   Future<void> _simulatePoEDetection() async {
     final random = Random();
     final ports = [1, 2, 3, 4];
-    
+
     for (int i = 0; i < ports.length; i++) {
       final port = ports[i];
       final hasDevice = random.nextDouble() > 0.3;
       final powerLevel = hasDevice ? 15.0 + random.nextDouble() * 10 : 0.0;
-      
+
       final node = PowerNode(
         nodeId: 'poe_port_$port',
         address: '00:11:22:33:44:${55 + port}',
@@ -139,12 +132,14 @@ class PowerTransport extends BaseTransport {
         status: hasDevice ? 'powered' : 'offline',
         lastSeen: DateTime.now(),
       );
-      
+
       _nodes[node.nodeId] = node;
       _knownNodes.add(node.nodeId);
-      
+
       if (hasDevice) {
-        reportStatus('PoE device detected on port $port (${powerLevel.toStringAsFixed(1)}W)');
+        reportStatus(
+          'PoE device detected on port $port (${powerLevel.toStringAsFixed(1)}W)',
+        );
       }
     }
   }
@@ -153,10 +148,11 @@ class PowerTransport extends BaseTransport {
     try {
       // Check if interface exists and supports PoE
       final result = await Process.run('ethtool', [
-        '-i', interfaceName,
+        '-i',
+        interfaceName,
         'show',
       ]);
-      
+
       final output = result.stdout;
       return output.contains('Power') || output.contains('PoE');
     } catch (e) {
@@ -176,14 +172,12 @@ class PowerTransport extends BaseTransport {
       ];
 
       _process = await Process.start('plc-modem', args);
-      
-      _stdoutSubscription = _process!.stdout
-          .transform(utf8.decoder)
-          .listen(_handlePLCOutput);
-      
-      _stderrSubscription = _process!.stderr
-          .transform(utf8.decoder)
-          .listen(_handlePLCError);
+
+      _stdoutSubscription =
+          _process!.stdout.transform(utf8.decoder).listen(_handlePLCOutput);
+
+      _stderrSubscription =
+          _process!.stderr.transform(utf8.decoder).listen(_handlePLCError);
 
       reportStatus('PLC narrowband initialized on $interfaceName');
     } catch (e) {
@@ -203,14 +197,12 @@ class PowerTransport extends BaseTransport {
       ];
 
       _process = await Process.start('plc-modem', args);
-      
-      _stdoutSubscription = _process!.stdout
-          .transform(utf8.decoder)
-          .listen(_handlePLCOutput);
-      
-      _stderrSubscription = _process!.stderr
-          .transform(utf8.decoder)
-          .listen(_handlePLCError);
+
+      _stdoutSubscription =
+          _process!.stdout.transform(utf8.decoder).listen(_handlePLCOutput);
+
+      _stderrSubscription =
+          _process!.stderr.transform(utf8.decoder).listen(_handlePLCError);
 
       reportStatus('PLC G3 initialized on $interfaceName');
     } catch (e) {
@@ -230,14 +222,12 @@ class PowerTransport extends BaseTransport {
       ];
 
       _process = await Process.start('plc-modem', args);
-      
-      _stdoutSubscription = _process!.stdout
-          .transform(utf8.decoder)
-          .listen(_handlePLCOutput);
-      
-      _stderrSubscription = _process!.stderr
-          .transform(utf8.decoder)
-          .listen(_handlePLCError);
+
+      _stdoutSubscription =
+          _process!.stdout.transform(utf8.decoder).listen(_handlePLCOutput);
+
+      _stderrSubscription =
+          _process!.stderr.transform(utf8.decoder).listen(_handlePLCError);
 
       reportStatus('PLC PRIME initialized on $interfaceName');
     } catch (e) {
@@ -247,7 +237,7 @@ class PowerTransport extends BaseTransport {
 
   Future<void> _startMockPLC() async {
     reportStatus('Using mock PLC modem');
-    
+
     // Simulate PLC network discovery
     Timer.periodic(Duration(seconds: 15), (_) {
       _simulatePLCNetworkDiscovery();
@@ -257,25 +247,25 @@ class PowerTransport extends BaseTransport {
   Future<void> _simulatePLCNetworkDiscovery() async {
     final random = Random();
     final nodeCount = random.nextInt(8) + 2;
-    
+
     for (int i = 0; i < nodeCount; i++) {
       final nodeId = 'plc_node_${i + 1}';
       final address = '192.168.${i + 1}.${random.nextInt(255)}';
       final signalStrength = -30 - random.nextInt(40);
-      
+
       final node = PowerNode(
         nodeId: nodeId,
         address: address,
         type: 'plc_device',
-        signalStrength: signalStrength,
+        signalStrength: signalStrength.toDouble(),
         status: signalStrength > -50 ? 'online' : 'offline',
         lastSeen: DateTime.now(),
       );
-      
+
       _nodes[nodeId] = node;
       _knownNodes.add(nodeId);
     }
-    
+
     reportStatus('PLC network discovered: $nodeCount nodes');
   }
 
@@ -284,7 +274,7 @@ class PowerTransport extends BaseTransport {
       final lines = output.split('\n');
       for (final line in lines) {
         if (line.trim().isEmpty) continue;
-        
+
         if (line.startsWith('PORT:')) {
           _handlePoEPortStatus(line.substring(5));
         } else if (line.startsWith('POWER:')) {
@@ -304,19 +294,20 @@ class PowerTransport extends BaseTransport {
       final portNum = parts[0];
       final status = parts[1];
       final power = parts[2];
-      
+
       final nodeId = 'poe_port_$portNum';
-      final node = _nodes[nodeId] ?? PowerNode(
-        nodeId: nodeId,
-        address: '00:11:22:33:44:${55 + int.parse(portNum)}',
-        type: 'poe_port',
-        status: status,
-        lastSeen: DateTime.now(),
-      );
-      
+      final node = _nodes[nodeId] ??
+          PowerNode(
+            nodeId: nodeId,
+            address: '00:11:22:33:44:${55 + int.parse(portNum)}',
+            type: 'poe_port',
+            status: status,
+            lastSeen: DateTime.now(),
+          );
+
       node.powerLevel = double.tryParse(power) ?? 0.0;
       _nodes[nodeId] = node;
-      
+
       reportStatus('PoE Port $portNum: $status (${power}W)');
     } catch (e) {
       reportError('Failed to parse PoE port status: $e');
@@ -329,8 +320,10 @@ class PowerTransport extends BaseTransport {
       final totalPower = parts[0];
       final availablePower = parts[1];
       final usedPower = parts[2];
-      
-      reportStatus('PoE Power: Total=$totalPower, Available=$availablePower, Used=$usedPower');
+
+      reportStatus(
+        'PoE Power: Total=$totalPower, Available=$availablePower, Used=$usedPower',
+      );
     } catch (e) {
       reportError('Failed to parse PoE power status: $e');
     }
@@ -343,21 +336,22 @@ class PowerTransport extends BaseTransport {
       final mac = info['mac'];
       final vendor = info['vendor'];
       final powerClass = info['class'];
-      
+
       final nodeId = 'poe_device_${port}_${mac.hashCode()}';
-      final node = _nodes[nodeId] ?? PowerNode(
-        nodeId: nodeId,
-        address: mac,
-        type: 'poe_device',
-        vendor: vendor,
-        powerClass: powerClass,
-        status: 'connected',
-        lastSeen: DateTime.now(),
-      );
-      
+      final node = _nodes[nodeId] ??
+          PowerNode(
+            nodeId: nodeId,
+            address: mac,
+            type: 'poe_device',
+            vendor: vendor,
+            powerClass: powerClass,
+            status: 'connected',
+            lastSeen: DateTime.now(),
+          );
+
       _nodes[nodeId] = node;
       _knownNodes.add(nodeId);
-      
+
       reportStatus('PoE Device: $vendor ($powerClass) on port $port');
     } catch (e) {
       reportError('Failed to parse PoE device info: $e');
@@ -369,7 +363,7 @@ class PowerTransport extends BaseTransport {
       final lines = output.split('\n');
       for (final line in lines) {
         if (line.trim().isEmpty) continue;
-        
+
         if (line.startsWith('NODE:')) {
           _handlePLCNodeInfo(line.substring(5));
         } else if (line.startsWith('MESSAGE:')) {
@@ -390,7 +384,7 @@ class PowerTransport extends BaseTransport {
       final address = info['address'];
       final type = info['type'];
       final signal = info['signal'];
-      
+
       final node = PowerNode(
         nodeId: nodeId,
         address: address,
@@ -399,10 +393,10 @@ class PowerTransport extends BaseTransport {
         status: 'online',
         lastSeen: DateTime.now(),
       );
-      
+
       _nodes[nodeId] = node;
       _knownNodes.add(nodeId);
-      
+
       reportStatus('PLC Node: $nodeId ($address) - ${signal}dBm');
     } catch (e) {
       reportError('Failed to parse PLC node info: $e');
@@ -414,11 +408,11 @@ class PowerTransport extends BaseTransport {
       final info = jsonDecode(messageData);
       final source = info['source'];
       final message = info['message'];
-      
+
       // Parse transport packet from PLC message
       final packet = TransportPacket.fromJson(message);
       emitPacket(packet);
-      
+
       reportStatus('PLC Message from $source: ${message.substring(0, 50)}...');
     } catch (e) {
       reportError('Failed to parse PLC message: $e');
@@ -431,8 +425,10 @@ class PowerTransport extends BaseTransport {
       final throughput = stats['throughput'];
       final errorRate = stats['errorRate'];
       final latency = stats['latency'];
-      
-      reportStatus('PLC Stats: ${throughput}kbps, ${errorRate}% errors, ${latency}ms latency');
+
+      reportStatus(
+        'PLC Stats: ${throughput}kbps, ${errorRate}% errors, ${latency}ms latency',
+      );
     } catch (e) {
       reportError('Failed to parse PLC stats: $e');
     }
@@ -568,29 +564,32 @@ class PowerTransport extends BaseTransport {
       'technology': technology.toString(),
       'interface': interfaceName,
       'totalNodes': _nodes.length,
-      'onlineNodes': _nodes.values
-          .where((node) => node.status == 'online')
-          .length,
+      'onlineNodes':
+          _nodes.values.where((node) => node.status == 'online').length,
       'totalPower': _calculateTotalPower(),
       'availablePower': _calculateAvailablePower(),
       'usedPower': _calculateUsedPower(),
-      'nodes': _nodes.values.map((node) => {
-        'nodeId': node.nodeId,
-        'address': node.address,
-        'type': node.type,
-        'status': node.status,
-        'powerLevel': node.powerLevel,
-        'signalStrength': node.signalStrength,
-        'vendor': node.vendor,
-        'powerClass': node.powerClass,
-        'lastSeen': node.lastSeen.toIso8601String(),
-      }).toList(),
+      'nodes': _nodes.values
+          .map(
+            (node) => {
+              'nodeId': node.nodeId,
+              'address': node.address,
+              'type': node.type,
+              'status': node.status,
+              'powerLevel': node.powerLevel,
+              'signalStrength': node.signalStrength,
+              'vendor': node.vendor,
+              'powerClass': node.powerClass,
+              'lastSeen': node.lastSeen.toIso8601String(),
+            },
+          )
+          .toList(),
     };
   }
 
   double _calculateTotalPower() {
     if (technology != PowerTechnology.poe) return 0.0;
-    
+
     return _nodes.values
         .where((node) => node.type == 'poe_device')
         .fold(0.0, (sum, node) => sum + node.powerLevel);
@@ -598,14 +597,14 @@ class PowerTransport extends BaseTransport {
 
   double _calculateAvailablePower() {
     if (technology != PowerTechnology.poe) return 0.0;
-    
+
     // Simulate available power calculation
     return 60.0; // 60W total available
   }
 
   double _calculateUsedPower() {
     if (technology != PowerTechnology.poe) return 0.0;
-    
+
     return _calculateTotalPower();
   }
 
@@ -615,16 +614,16 @@ class PowerTransport extends BaseTransport {
   Future<void> dispose() async {
     await _stdoutSubscription?.cancel();
     await _stderrSubscription?.cancel();
-    
+
     if (_process != null) {
       _process!.kill();
       await _process!.exitCode;
     }
-    
+
     _nodes.clear();
     _buffers.clear();
     _knownNodes.clear();
-    
+
     await super.dispose();
   }
 
@@ -638,7 +637,8 @@ class PowerNode {
   final String type;
   final String? vendor;
   final String? powerClass;
-  final double powerLevel;
+  double powerLevel; // Mutable
+  final bool isPse; // Power Sourcing Equipment?
   final double signalStrength;
   final String status;
   final DateTime lastSeen;
@@ -650,6 +650,7 @@ class PowerNode {
     this.vendor,
     this.powerClass,
     this.powerLevel = 0.0,
+    this.isPse = false,
     this.signalStrength = -100.0,
     required this.status,
     required this.lastSeen,

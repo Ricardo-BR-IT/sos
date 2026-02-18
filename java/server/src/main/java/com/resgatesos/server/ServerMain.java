@@ -142,6 +142,340 @@ public class ServerMain {
             sendJson(exchange, AssistantEngine.catalog());
         });
 
+        AgentEngine agents = new AgentEngine();
+
+        server.createContext("/mind/catalog", exchange -> {
+            if (!"GET".equalsIgnoreCase(exchange.getRequestMethod())) {
+                send(exchange, 405, "Method Not Allowed");
+                return;
+            }
+            Map<String, Object> catalog = new HashMap<>();
+            catalog.put("version", AgentEngine.VERSION);
+            List<Map<String, String>> agentList = new ArrayList<>();
+            for (AgentEngine.AgentType type : AgentEngine.AgentType.values()) {
+                agentList.add(Map.of(
+                        "id", type.name(),
+                        "label", type.label,
+                        "description", type.description));
+            }
+            catalog.put("agents", agentList);
+            sendJson(exchange, catalog);
+        });
+
+        server.createContext("/mind", exchange -> {
+            if (!"GET".equalsIgnoreCase(exchange.getRequestMethod())
+                    && !"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+                send(exchange, 405, "Method Not Allowed");
+                return;
+            }
+            Map<String, String> params = new LinkedHashMap<>(parseQuery(exchange.getRequestURI()));
+            if ("POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+                String body = readBody(exchange.getRequestBody());
+                if (!body.trim().isEmpty()) {
+                    Map<String, Object> data = new Gson().fromJson(body, Map.class);
+                    params.putAll(extractParams(data));
+                }
+            }
+
+            String query = params.get("q");
+            String agentId = params.get("agent");
+            AgentEngine.AgentType pref = AgentEngine.AgentType.TAC_SOS;
+            try {
+                if (agentId != null)
+                    pref = AgentEngine.AgentType.valueOf(agentId);
+            } catch (Exception ignored) {
+            }
+
+            if (query == null || query.trim().isEmpty()) {
+                send(exchange, 400, "Missing query 'q' parameter");
+                return;
+            }
+
+            sendJson(exchange, agents.consult(query, pref));
+        });
+
+        server.createContext("/mind/signal", exchange -> {
+            if (!"GET".equalsIgnoreCase(exchange.getRequestMethod())) {
+                send(exchange, 405, "Method Not Allowed");
+                return;
+            }
+            Map<String, String> params = parseQuery(exchange.getRequestURI());
+            String query = params.get("q");
+            if (query == null || query.trim().isEmpty()) {
+                send(exchange, 400, "Missing query 'q' parameter");
+                return;
+            }
+
+            try {
+                byte[] audio = agents.generateMorseAudio(query);
+                exchange.getResponseHeaders().add("Content-Type", "audio/wav");
+                exchange.getResponseHeaders().add("Content-Disposition", "attachment; filename=\"sos_signal.wav\"");
+                exchange.sendResponseHeaders(200, audio.length);
+                try (OutputStream os = exchange.getResponseBody()) {
+                    os.write(audio);
+                }
+            } catch (Exception e) {
+                send(exchange, 500, "Signal generation failed: " + e.getMessage());
+            }
+        });
+
+        server.createContext("/mind/decode", exchange -> {
+            if (!"GET".equalsIgnoreCase(exchange.getRequestMethod())) {
+                send(exchange, 405, "Method Not Allowed");
+                return;
+            }
+            Map<String, String> params = parseQuery(exchange.getRequestURI());
+            String morse = params.get("m");
+            if (morse == null || morse.trim().isEmpty()) {
+                send(exchange, 400, "Missing morse 'm' parameter");
+                return;
+            }
+
+            String decoded = agents.decodeMorse(morse);
+            String translated = agents.translateEmergency(decoded);
+
+            Map<String, String> responseMap = new HashMap<>();
+            responseMap.put("original", morse);
+            responseMap.put("decoded", decoded);
+            responseMap.put("translated", translated);
+            sendJson(exchange, responseMap);
+        });
+
+        server.createContext("/mind/phonetic", exchange -> {
+            if (!"GET".equalsIgnoreCase(exchange.getRequestMethod())) {
+                send(exchange, 405, "Method Not Allowed");
+                return;
+            }
+            Map<String, String> params = parseQuery(exchange.getRequestURI());
+            String query = params.get("q"); // Plain text to phonetic
+            String phonetic = params.get("p"); // Phonetic to plain text
+
+            Map<String, Object> responsePhonetic = new HashMap<>();
+            if (query != null) {
+                responsePhonetic.put("original", query);
+                responsePhonetic.put("phonetic", agents.toPhonetic(query));
+            } else if (phonetic != null) {
+                responsePhonetic.put("phonetic", phonetic);
+                String decoded = agents.fromPhonetic(phonetic);
+                responsePhonetic.put("decoded", decoded);
+                responsePhonetic.put("translated", agents.translateEmergency(decoded));
+            } else {
+                send(exchange, 400, "Missing 'q' or 'p' parameter");
+                return;
+            }
+            sendJson(exchange, responsePhonetic);
+        });
+
+        server.createContext("/mind/codes", exchange -> {
+            Map<String, String> params = parseQuery(exchange.getRequestURI());
+            String type = params.get("type"); // tap | fsk
+            String q = params.get("q");
+
+            if ("tap".equals(type)) {
+                Map<String, Object> respMap = new HashMap<>();
+                if (q != null && q.contains(",")) { // Decoding
+                    String decoded = agents.fromTapCode(q);
+                    respMap.put("decoded", decoded);
+                    respMap.put("translated", agents.translateEmergency(decoded));
+                } else if (q != null) { // Encoding
+                    respMap.put("encoded", agents.toTapCode(q));
+                }
+                sendJson(exchange, respMap);
+            } else if ("fsk".equals(type)) {
+                try {
+                    byte[] audio = agents.generateFSK(q);
+                    exchange.getResponseHeaders().add("Content-Type", "audio/wav");
+                    exchange.sendResponseHeaders(200, audio.length);
+                    try (OutputStream os = exchange.getResponseBody()) {
+                        os.write(audio);
+                    }
+                } catch (Exception e) {
+                    send(exchange, 500, "FSK Failed: " + e.getMessage());
+                }
+            } else {
+                send(exchange, 400, "Unknown type or missing q");
+            }
+        });
+
+        server.createContext("/mind/vitals", exchange -> {
+            Map<String, String> params = parseQuery(exchange.getRequestURI());
+            int bpm = Integer.parseInt(params.getOrDefault("bpm", "0"));
+            int spo2 = Integer.parseInt(params.getOrDefault("spo2", "100"));
+
+            String status = agents.analyzeVitals(bpm, spo2);
+            Map<String, Object> resp = new HashMap<>();
+            resp.put("status", status);
+            resp.put("translated", agents.translateEmergency(status.toLowerCase().replace("_", " ")));
+            sendJson(exchange, resp);
+        });
+
+        server.createContext("/mind/seismic", exchange -> {
+            Map<String, String> params = parseQuery(exchange.getRequestURI());
+            String dataStr = params.get("d");
+            if (dataStr == null) {
+                send(exchange, 400, "Missing data");
+                return;
+            }
+            String[] tokens = dataStr.split(",");
+            double[] samples = new double[tokens.length];
+            for (int i = 0; i < tokens.length; i++) {
+                try {
+                    samples[i] = Double.parseDouble(tokens[i]);
+                } catch (Exception e) {
+                }
+            }
+
+            String classification = agents.classifySeismic(samples);
+            Map<String, Object> resp = new HashMap<>();
+            resp.put("status", classification);
+            resp.put("translated", agents.translateEmergency(classification.toLowerCase().replace("_", " ")));
+            sendJson(exchange, resp);
+        });
+
+        server.createContext("/mind/classification", exchange -> {
+            Map<String, String> params = parseQuery(exchange.getRequestURI());
+            String q = params.get("q");
+            String classification = agents.classifyDistress(q);
+            Map<String, Object> resp = new HashMap<>();
+
+            String type = agents.identifySignal(q);
+            resp.put("type", type);
+            resp.put("classification", classification);
+            resp.put("translated", agents.translateEmergency(classification.toLowerCase().replace("_", " ")));
+            sendJson(exchange, resp);
+        });
+
+        server.createContext("/mind/auto", exchange -> {
+            Map<String, String> params = parseQuery(exchange.getRequestURI());
+            String q = params.get("q");
+            Map<String, Object> resp = new HashMap<>();
+
+            String type = agents.identifySignal(q);
+            resp.put("type", type);
+
+            String decoded = "";
+            if ("MORSE".equals(type))
+                decoded = agents.decodeMorse(q);
+            else if ("TAP".equals(type))
+                decoded = agents.fromTapCode(q);
+            else if ("PHONETIC".equals(type))
+                decoded = agents.fromPhonetic(q);
+            else
+                decoded = q;
+
+            resp.put("decoded", decoded);
+            resp.put("translated", agents.translateEmergency(decoded));
+            sendJson(exchange, resp);
+        });
+
+        server.createContext("/mind/skywave", exchange -> {
+            Map<String, String> params = parseQuery(exchange.getRequestURI());
+            String action = params.getOrDefault("action", "status");
+            String query = params.getOrDefault("q", "");
+
+            if ("send".equals(action)) {
+                try {
+                    byte[] audio = agents.generateHFBurst(query);
+                    sendAudio(exchange, audio);
+                } catch (IOException e) {
+                    send(exchange, 500, "Error: " + e.getMessage());
+                }
+            } else {
+                sendJson(exchange, agents.modelIonosphere());
+            }
+        });
+
+        server.createContext("/mind/stress", exchange -> {
+            if ("POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+                try {
+                    byte[] audio = exchange.getRequestBody().readAllBytes();
+                    sendJson(exchange, agents.analyzeVocalStress(audio));
+                } catch (IOException e) {
+                    send(exchange, 500, "Error: " + e.getMessage());
+                }
+            } else {
+                send(exchange, 405, "Method Not Allowed");
+            }
+        });
+
+        server.createContext("/mind/neural", exchange -> {
+            if ("POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+                String body = readBody(exchange.getRequestBody());
+                Map<String, Double> eeg = new Gson().fromJson(body,
+                        new com.google.gson.reflect.TypeToken<Map<String, Double>>() {
+                        }.getType());
+                float alpha = eeg.getOrDefault("alpha", 0.0).floatValue();
+                float beta = eeg.getOrDefault("beta", 0.0).floatValue();
+                sendJson(exchange, Map.of("advice", agents.getNeuralAdvice(alpha, beta)));
+            } else {
+                send(exchange, 405, "Method Not Allowed");
+            }
+        });
+
+        server.createContext("/mind/forge", exchange -> {
+            Map<String, String> params = parseQuery(exchange.getRequestURI());
+            String action = params.getOrDefault("action", "poll");
+            String worker = params.getOrDefault("worker", "unknown");
+
+            if ("POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+                String body = readBody(exchange.getRequestBody());
+                Map<String, String> data = new Gson().fromJson(body,
+                        new com.google.gson.reflect.TypeToken<Map<String, String>>() {
+                        }.getType());
+                agents.processForgeResult(data.get("id"), data.get("result"));
+                sendJson(exchange, Map.of("ok", true));
+            } else if ("poll".equals(action)) {
+                sendJson(exchange, agents.pollForgeTask(worker));
+            } else if ("create".equals(action)) {
+                String type = params.getOrDefault("type", "ANALYZE");
+                int intensity = parseIntParam(params, "intensity", 10);
+                sendJson(exchange, agents.createForgeTask(type, intensity));
+            } else {
+                send(exchange, 400, "Invalid action");
+            }
+        });
+
+        server.createContext("/mind/security", exchange -> {
+            if ("POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+                String body = readBody(exchange.getRequestBody());
+                Map<String, String> data = new Gson().fromJson(body,
+                        new com.google.gson.reflect.TypeToken<Map<String, String>>() {
+                        }.getType());
+                sendJson(exchange, agents.processKineticSeed(data.get("seed")));
+            } else {
+                Map<String, Object> status = new HashMap<>();
+                status.put("active", true);
+                status.put("method", "KINETIC_MOTION");
+                sendJson(exchange, status);
+            }
+        });
+
+        server.createContext("/mind/power", exchange -> {
+            Map<String, String> params = parseQuery(exchange.getRequestURI());
+            float level = parseFloatParam(params, "level", 1.0f);
+            float drain = parseFloatParam(params, "drain", 0.05f);
+            String profile = params.getOrDefault("profile", "TACTICAL");
+            sendJson(exchange, agents.predictPowerPersistence(level, drain, profile));
+        });
+
+        server.createContext("/mind/rf-scan", exchange -> {
+            Map<String, String> params = parseQuery(exchange.getRequestURI());
+            String action = params.getOrDefault("action", "list");
+
+            if ("log".equals(action)) {
+                String freq = params.getOrDefault("freq", "0");
+                int rssi = parseIntParam(params, "rssi", 0);
+                float bearing = parseFloatParam(params, "bearing", 0f);
+                sendJson(exchange, agents.processRFScannerData(freq, rssi, bearing));
+            } else {
+                sendJson(exchange, agents.getTransmitterMap());
+            }
+        });
+
+        server.createContext("/mind/sensing", exchange -> {
+            sendJson(exchange, agents.getSensingStatus());
+        });
+
         server.createContext("/assistant", exchange -> {
             if (!"GET".equalsIgnoreCase(exchange.getRequestMethod())
                     && !"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
@@ -170,7 +504,9 @@ public class ServerMain {
                     send(exchange, 400, "Empty payload");
                     return;
                 }
-                List<Map<String, Object>> events = parseTelemetryPayload(body);
+                List<Map<String, Object>> events = new Gson().fromJson(body,
+                        new com.google.gson.reflect.TypeToken<List<Map<String, Object>>>() {
+                        }.getType());
                 if (events.isEmpty()) {
                     send(exchange, 400, "Invalid telemetry payload");
                     return;
@@ -450,6 +786,17 @@ public class ServerMain {
         }
     }
 
+    private static float parseFloatParam(Map<String, String> params, String key, float fallback) {
+        String value = params.get(key);
+        if (value == null || value.trim().isEmpty())
+            return fallback;
+        try {
+            return Float.parseFloat(value.trim());
+        } catch (NumberFormatException e) {
+            return fallback;
+        }
+    }
+
     private static Instant parseInstantParam(String value) {
         if (value == null || value.trim().isEmpty())
             return null;
@@ -602,6 +949,15 @@ public class ServerMain {
         if (name.endsWith(".jar"))
             return "application/java-archive";
         return "application/octet-stream";
+    }
+
+    private static void sendAudio(HttpExchange exchange, byte[] audio) throws IOException {
+        exchange.getResponseHeaders().add("Content-Type", "audio/wav");
+        exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+        exchange.sendResponseHeaders(200, audio.length);
+        try (OutputStream os = exchange.getResponseBody()) {
+            os.write(audio);
+        }
     }
 
     private static void send(HttpExchange exchange, int code, String text) throws IOException {

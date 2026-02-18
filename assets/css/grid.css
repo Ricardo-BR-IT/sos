@@ -1,0 +1,52 @@
+/* Simple Grid System */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 16px;
+    padding: 16px;
+}
+
+.col-12 {
+    grid-column: span 12;
+}
+
+.col-8 {
+    grid-column: span 8;
+}
+
+.col-6 {
+    grid-column: span 6;
+}
+
+.col-4 {
+    grid-column: span 4;
+}
+
+.col-3 {
+    grid-column: span 3;
+}
+
+@media (max-width: 768px) {
+
+    .col-8,
+    .col-6,
+    .col-4,
+    .col-3 {
+        grid-column: span 12;
+    }
+}
+
+.card {
+    background: rgba(0, 20, 0, 0.6);
+    border: 1px solid #004400;
+    padding: 16px;
+}
+
+.card-title {
+    color: var(--terminal-green);
+    border-bottom: 1px dashed #004400;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+}

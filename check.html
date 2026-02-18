@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>SOS DIAGNOSTIC TOOL</title>
+    <style>
+        body {
+            background: #111;
+            color: #0f0;
+            font-family: monospace;
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>SOS NETWORK DIAGNOSTIC</h1>
+    <hr>
+    <div>Testing API Connection to: <b>api/status.php</b></div>
+    <div id="status">initializing...</div>
+    <pre id="output" style="border:1px solid #333; padding:10px; margin-top:20px;"></pre>
+
+    <script>
+        const output = document.getElementById('output');
+        const status = document.getElementById('status');
+
+        async function runTest() {
+            status.innerText = "SENDING REQUEST...";
+            try {
+                const res = await fetch('api/status.php');
+                status.innerText = `HTTP STATUS: ${res.status} ${res.statusText}`;
+
+                const txt = await res.text();
+                output.innerText = txt;
+
+                try {
+                    const json = JSON.parse(txt);
+                    output.innerText += "\n\n[JSON VALIDATION: OK]";
+                    output.innerText += "\nNodes Found: " + (json.nodes ? json.nodes.length : 0);
+                } catch (e) {
+                    output.innerText += "\n\n[JSON VALIDATION: FAIL] - Response is not valid JSON.";
+                }
+
+            } catch (e) {
+                status.innerText = "NETWORK ERROR";
+                output.innerText = e.message;
+            }
+        }
+        runTest();
+    </script>
+</body>
+
+</html>
