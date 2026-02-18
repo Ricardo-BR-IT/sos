@@ -1,3 +1,4 @@
+// ignore_for_file: unused_field, unused_local_variable, unused_element, deprecated_member_use
 import 'dart:async';
 
 import 'transport_layer.dart';
@@ -8,7 +9,6 @@ import 'transport_packet.dart';
 /// Cellular Transport Layer.
 /// Full cellular stack: 2G/3G/4G/5G via AT command interface.
 class CellularTransport extends TransportLayer {
-  // ignore: unused_field
   final String _serialPort;
   final CellularGeneration _preferredGen;
 
@@ -175,3 +175,4 @@ class CellularInfo {
 }
 
 enum CellularGeneration { gsm2g, umts3g, lte, nr5g, auto }
+

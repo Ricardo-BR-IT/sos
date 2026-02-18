@@ -2,6 +2,7 @@
 /// Hash + Ed25519 signature verification using libsodium.
 
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:sodium_libs/sodium_libs.dart';
 

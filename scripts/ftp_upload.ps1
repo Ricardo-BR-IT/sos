@@ -2,9 +2,16 @@ param(
   [string]$LocalRoot = "C:\site\mentalesaude\www\ricardo\sos\deploy_stage",
   [string]$RemoteRoot = "ftp://mentalesaude.com.br/public_html/ricardo/sos/"
 )
-$ErrorActionPreference = 'Continue'
-$ftpUser = 'mentales'
-$ftpPass = '4dSeA.3g0E6R(z'
+
+$ErrorActionPreference = 'Stop'
+
+$ftpUser = $env:FTP_USER
+$ftpPass = $env:FTP_PASS
+
+if ([string]::IsNullOrWhiteSpace($ftpUser) -or [string]::IsNullOrWhiteSpace($ftpPass)) {
+  throw "FTP_USER/FTP_PASS not set in environment."
+}
+
 $script:FailedUploads = New-Object System.Collections.Generic.List[string]
 
 function New-FtpDirectory {
@@ -18,6 +25,7 @@ function New-FtpDirectory {
     $response = $request.GetResponse()
     $response.Close()
   } catch {
+    # directory may already exist
   }
 }
 
@@ -33,6 +41,7 @@ function Remove-FtpFile {
     $response = $request.GetResponse()
     $response.Close()
   } catch {
+    # ignore delete failure before upload
   }
 }
 
@@ -44,6 +53,7 @@ function Upload-FtpFile {
       if ($attempt -eq 1) {
         Remove-FtpFile -remoteUrl $remoteUrl
       }
+
       $request = [System.Net.FtpWebRequest]::Create($remoteUrl)
       $request.Method = [System.Net.WebRequestMethods+Ftp]::UploadFile
       $request.Credentials = New-Object System.Net.NetworkCredential($ftpUser, $ftpPass)
@@ -82,11 +92,15 @@ function Sync-Dir {
           $script:FailedUploads.Add($_.FullName)
         }
       }
-      Start-Sleep -Milliseconds 120
+      Start-Sleep -Milliseconds 100
     } catch {
       $script:FailedUploads.Add($_.FullName)
     }
   }
+}
+
+if (-not (Test-Path $LocalRoot)) {
+  throw "LocalRoot not found: $LocalRoot"
 }
 
 Sync-Dir -localDir $LocalRoot -remoteUrl $RemoteRoot
@@ -96,3 +110,5 @@ if ($script:FailedUploads.Count -gt 0) {
   $script:FailedUploads | ForEach-Object { Write-Host $_ }
   exit 1
 }
+
+Write-Host "Upload completed: $RemoteRoot"

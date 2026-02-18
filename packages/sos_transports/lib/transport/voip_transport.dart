@@ -1,3 +1,4 @@
+// ignore_for_file: unused_field, unused_local_variable, unused_element, deprecated_member_use
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -225,3 +226,4 @@ Content-Length: 0\r
     await _incomingController.close();
   }
 }
+

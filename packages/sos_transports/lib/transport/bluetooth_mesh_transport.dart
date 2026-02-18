@@ -1,3 +1,4 @@
+// ignore_for_file: unused_field, unused_local_variable, unused_element, deprecated_member_use
 /// bluetooth_mesh_transport.dart
 /// Bluetooth Mesh transport implementation using BLE as underlying layer
 
@@ -368,3 +369,4 @@ class _MeshCharacteristicPair {
 
   _MeshCharacteristicPair({required this.tx, required this.rx});
 }
+

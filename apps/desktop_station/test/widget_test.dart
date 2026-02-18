@@ -31,11 +31,10 @@ class _FakeTransport extends BaseTransport {
   @override
   Future<void> broadcast(String message) async {}
 
-  @override
   Future<void> toggle() async {}
 
   @override
-  bool get enabled => true;
+  bool get isEnabled => true;
 
   @override
   Future<void> connect(String peerId) async {}

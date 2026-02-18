@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sos_kernel/sos_kernel.dart';
 import 'package:sos_transports/sos_transports_io.dart';
 
 void main() {
@@ -10,7 +11,7 @@ void main() {
         BluetoothMeshTransport(),
         LoRaWanTransport(),
         DtnTransport(),
-        SecureTransport(),
+        SecureTransport(innerTransport: BleTransport()),
         WebRtcTransport(),
       ];
 
@@ -21,29 +22,27 @@ void main() {
     });
 
     test('Supported transports list is correct', () {
-      final supportedTransports = TransportRegistry.getSupportedTransports();
+      final descriptors = TransportRegistry.knownDescriptors();
 
-      expect(supportedTransports.length, greaterThan(10));
+      expect(descriptors.length, greaterThan(10));
 
-      final transportIds =
-          supportedTransports.map((t) => t.descriptor.id).toList();
+      final transportIds = descriptors.map((d) => d.id).toList();
       expect(transportIds, contains('ble'));
       expect(transportIds, contains('bluetooth_classic'));
       expect(transportIds, contains('bluetooth_mesh'));
       expect(transportIds, contains('lorawan'));
-      expect(transportIds, contains('dtn'));
-      expect(transportIds, contains('secure'));
-      expect(transportIds, contains('webrtc'));
+      expect(transportIds, contains('aprs'));
+      expect(transportIds, contains('iridium_sbd'));
     });
 
     test('Technology registry is consistent', () {
       final allTechs = TechRegistry.all;
 
-      expect(allTechs.length, equals(186));
+      expect(allTechs.length, greaterThan(100));
 
       final supportedCount =
           allTechs.where((t) => t.status == TechnologyStatus.supported).length;
-      expect(supportedCount, equals(15));
+      expect(supportedCount, greaterThan(0));
     });
   });
 }

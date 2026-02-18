@@ -28,11 +28,12 @@ void main() {
         expect(frame.envelope, equals(testEnvelope));
       });
 
-      test('should compute unique ID based on envelope and timestamp', () {
+      test('should compute unique ID based on envelope and timestamp',
+          () async {
         final frame1 = SosFrame.wrap(envelope: testEnvelope, ttl: 8);
 
         // Wait a tiny bit to ensure different timestamp
-        Future.delayed(const Duration(milliseconds: 10));
+        await Future.delayed(const Duration(milliseconds: 10));
         final frame2 = SosFrame.wrap(envelope: testEnvelope, ttl: 8);
 
         expect(frame1.id, isNot(equals(frame2.id)));

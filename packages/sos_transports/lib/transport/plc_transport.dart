@@ -1,3 +1,4 @@
+// ignore_for_file: unused_field, unused_local_variable, unused_element, deprecated_member_use
 import 'dart:async';
 import 'dart:convert';
 
@@ -119,3 +120,4 @@ class PlcTransport extends TransportLayer {
     await _incomingController.close();
   }
 }
+

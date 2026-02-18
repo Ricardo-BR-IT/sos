@@ -1,127 +1,141 @@
-
+import concurrent.futures
 import os
+import shutil
 import subprocess
 import time
-import concurrent.futures
-import shutil
 
-# Configuration
 APPS = ["mobile_app", "desktop_station", "tv_router", "wearable_app"]
 EDITIONS = ["mini", "standard", "server"]
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-DEPLOY_STAGE = os.path.join(BASE_DIR, "deploy_stage")
+ARTIFACT_DIR = os.path.join(BASE_DIR, "build_artifacts")
+FLUTTER_BIN = os.environ.get("FLUTTER_BIN", r"C:\Users\ricod\flutter\bin")
+
+
+def _env():
+    env = os.environ.copy()
+    env["PATH"] = FLUTTER_BIN + os.pathsep + env.get("PATH", "")
+    return env
+
+
+def _run(cmd, cwd):
+    return subprocess.run(
+        cmd,
+        cwd=cwd,
+        env=_env(),
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+
+
+def _clear_desktop_ephemeral(app_dir):
+    symlink_dir = os.path.join(
+        app_dir, "windows", "flutter", "ephemeral", ".plugin_symlinks"
+    )
+    if os.path.exists(symlink_dir):
+        shutil.rmtree(symlink_dir, ignore_errors=True)
+
 
 def build_app(app, edition):
-    start_time = time.time()
-    print(f"[{app.upper()}] Building edition: {edition}...")
-    
+    start = time.time()
     app_dir = os.path.join(BASE_DIR, "apps", app)
-    
-    flutter_cmd = "flutter.bat" if os.name == 'nt' else "flutter"
-    
-    # 1. Run PUB GET
-    print(f"[{app.upper()}] Running pub get...")
     try:
-        subprocess.run(
-            [flutter_cmd, "pub", "get"],
-            cwd=app_dir,
-            check=True,
-            capture_output=True
-        )
-    except subprocess.CalledProcessError as e:
-        print(f"[{app.upper()}] ❌ Pub Get Failed: {e}")
-        return (False, app, edition, "Pub Get Failed")
+        if app == "desktop_station":
+            _clear_desktop_ephemeral(app_dir)
 
-    # 2. Construct Build Command
-    cmd = [flutter_cmd, "build"]
+        _run(["flutter.bat", "pub", "get"], cwd=app_dir)
+        if app == "desktop_station":
+            _run(
+                [
+                    "flutter.bat",
+                    "build",
+                    "windows",
+                    "--release",
+                    f"--dart-define=EDITION={edition}",
+                    "--no-pub",
+                ],
+                cwd=app_dir,
+            )
+        else:
+            _run(
+                [
+                    "flutter.bat",
+                    "build",
+                    "apk",
+                    "--release",
+                    f"--dart-define=EDITION={edition}",
+                    "--no-pub",
+                ],
+                cwd=app_dir,
+            )
+    except subprocess.CalledProcessError as exc:
+        return False, app, edition, exc.stderr or exc.stdout
+
+    return True, app, edition, f"{time.time() - start:.1f}s"
+
+
+def _artifact_path(app):
     if app == "desktop_station":
-        cmd.append("windows")
-    else:
-        cmd.append("apk")
-    
-    cmd.extend(["--release", f"--dart-define=EDITION={edition}", "--no-pub"])
-    
-    try:
-        # Run build
-        result = subprocess.run(
-            cmd,
-            cwd=app_dir,
-            capture_output=True,
-            text=True,
-            check=True
+        return os.path.join(
+            BASE_DIR,
+            "apps",
+            app,
+            "build",
+            "windows",
+            "x64",
+            "runner",
+            "Release",
+            "desktop_station.exe",
         )
-        duration = time.time() - start_time
-        print(f"[{app.upper()}] Success ({edition}) in {duration:.1f}s")
-        return (True, app, edition, result.stdout)
-    except subprocess.CalledProcessError as e:
-        print(f"[{app.upper()}] Failed ({edition}): {e.stderr}")
-        return (False, app, edition, e.stderr)
+    return os.path.join(
+        BASE_DIR, "apps", app, "build", "app", "outputs", "flutter-apk", "app-release.apk"
+    )
+
+
+def _artifact_name(app, edition):
+    if app == "mobile_app":
+        return f"mobile-{edition}.apk"
+    if app == "tv_router":
+        return f"tv-{edition}.apk"
+    if app == "wearable_app":
+        return f"wear-{edition}.apk"
+    return f"desktop-{edition}.exe"
+
 
 def main():
-    print("Starting Parallel Build via Python...")
-    print(f"Apps: {APPS}")
-    print(f"Editions: {EDITIONS}")
-    
-    os.makedirs(DEPLOY_STAGE, exist_ok=True)
-    
-    results = []
-    
-    # Use ThreadPoolExecutor for parallelism
-    # We have 4 apps * 3 editions = 12 builds.
-    # Max workers = 4 (to avoid killing the machine)
-    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
-        futures = []
-        for edition in EDITIONS:
-            # Create edition folder in deploy_stage
-            ee_dir = os.path.join(DEPLOY_STAGE, edition)
-            os.makedirs(ee_dir, exist_ok=True)
-            
-            for app in APPS:
-                futures.append(executor.submit(build_app, app, edition))
-        
-        for future in concurrent.futures.as_completed(futures):
-            success, app, edition, output = future.result()
-            results.append((success, app, edition))
-            
-            if success:
-                # Copy artifact
-                src = ""
-                dest_name = ""
-                if app == "desktop_station":
-                    src = os.path.join(BASE_DIR, "apps", app, "build", "windows", "x64", "runner", "Release", "desktop_station.exe")
-                    dest_name = f"desktop-{edition}.exe"
-                elif app == "mobile_app":
-                    src = os.path.join(BASE_DIR, "apps", app, "build", "app", "outputs", "flutter-apk", "app-release.apk")
-                    dest_name = f"mobile-{edition}.apk"
-                elif app == "tv_router":
-                    src = os.path.join(BASE_DIR, "apps", app, "build", "app", "outputs", "flutter-apk", "app-release.apk")
-                    dest_name = f"tv-{edition}.apk"
-                elif app == "wearable_app":
-                    src = os.path.join(BASE_DIR, "apps", app, "build", "app", "outputs", "flutter-apk", "app-release.apk")
-                    dest_name = f"wear-{edition}.apk"
-                
-                dest = os.path.join(DEPLOY_STAGE, edition, dest_name)
-                if os.path.exists(src):
-                    shutil.copy2(src, dest)
-                    print(f"Artifact copied: {dest}")
-                else:
-                    print(f"Artifact not found: {src}")
+    os.makedirs(ARTIFACT_DIR, exist_ok=True)
+    summary = []
 
-    # Summary
-    print("\n--- Build Summary ---")
-    failures = 0
-    for success, app, edition in results:
-        status = "SUCCESS" if success else "FAILED"
-        print(f"{status} {app} ({edition})")
-        if not success:
-            failures += 1
-            
-    if failures > 0:
-        print(f"\n{failures} builds failed.")
-        exit(1)
-    else:
-        print("\nAll builds succeeded!")
-        exit(0)
+    for edition in EDITIONS:
+        print(f"\n=== BUILD EDITION: {edition} ===")
+        ed_dir = os.path.join(ARTIFACT_DIR, edition)
+        os.makedirs(ed_dir, exist_ok=True)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+            futures = [executor.submit(build_app, app, edition) for app in APPS]
+            for future in concurrent.futures.as_completed(futures):
+                ok, app, ed, output = future.result()
+                summary.append((ok, app, ed, output))
+                status = "OK" if ok else "FAIL"
+                print(f"[{status}] {app} ({ed}) {output}")
+
+        edition_failures = [s for s in summary if s[2] == edition and not s[0]]
+        if edition_failures:
+            print(f"Edition {edition} failed.")
+            return 1
+
+        for app in APPS:
+            src = _artifact_path(app)
+            dst = os.path.join(ed_dir, _artifact_name(app, edition))
+            if not os.path.exists(src):
+                print(f"Artifact missing: {src}")
+                return 1
+            shutil.copy2(src, dst)
+            print(f"Artifact copied: {dst}")
+
+    print("\nAll edition builds succeeded.")
+    return 0
+
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

@@ -1,4 +1,5 @@
 name: sos_experimental
+publish_to: none
 description: Experimental transport implementations for SOS Mesh
 version: 0.0.1
 environment:

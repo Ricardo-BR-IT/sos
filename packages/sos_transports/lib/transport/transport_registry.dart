@@ -1,9 +1,10 @@
 import 'transport_descriptor.dart';
 import 'transport_layer.dart';
+import 'transport_provider.dart' show TransportActivation;
 // Conditional Import
 import 'transport_provider.dart'
     if (dart.library.io) 'transport_provider_io.dart'
-    if (dart.library.html) 'transport_provider_web.dart';
+    if (dart.library.html) 'transport_provider_web.dart' as provider;
 
 export 'transport_provider.dart' show TransportActivation;
 
@@ -107,7 +108,7 @@ class TransportRegistry {
   );
 
   static List<TransportDescriptor> knownDescriptors() {
-    final providerDescriptors = getProvider().knownDescriptors;
+    final providerDescriptors = provider.getProvider().knownDescriptors;
     return [
       ...providerDescriptors,
       cellularGateway,
@@ -127,6 +128,6 @@ class TransportRegistry {
   static List<TransportLayer> buildActiveLayers({
     TransportActivation activation = const TransportActivation(),
   }) {
-    return getProvider().buildLayers(activation);
+    return provider.getProvider().buildLayers(activation);
   }
 }

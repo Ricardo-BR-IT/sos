@@ -17,7 +17,8 @@ void main() {
     'Bluetooth Mesh': _testTransport(() => BluetoothMeshTransport()),
     'LoRaWAN': _testTransport(() => LoRaWanTransport()),
     'DTN': _testTransport(() => DtnTransport()),
-    'Secure Transport': _testTransport(() => SecureTransport()),
+    'Secure Transport':
+        _testTransport(() => SecureTransport(innerTransport: BleTransport())),
     'WebRTC': _testTransport(() => WebRtcTransport()),
   };
 

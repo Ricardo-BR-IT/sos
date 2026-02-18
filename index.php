@@ -1,355 +1,411 @@
 <?php
-// SOS AEON: COMMAND DASHBOARD (V9)
+
+declare(strict_types=1);
+
+require_once __DIR__ . '/includes/lang_bootstrap.php';
+$bootstrapJson = htmlspecialchars(sos_bootstrap_json(), ENT_QUOTES, 'UTF-8');
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOS COMMAND [AEON]</title>
-    <link rel="stylesheet" href="assets/css/aeon.css">
+    <title>SOS Command Portal</title>
     <link rel="manifest" href="manifest.json">
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js')
-            .then(reg => console.log('[SW] Registered', reg))
-            .catch(err => console.log('[SW] Fail', err));
-        }
-    </script>
+    <link rel="stylesheet" href="assets/css/portal.css">
 </head>
-<body>
-
-<div class="app-shell">
-    <!-- SIDEBAR NAVIGATION -->
-    <?php include 'includes/sidebar.php'; ?>
-
-    <!-- MAIN CONTENT (HUD) -->
-    <div class="main-content">
-        
-        <!-- BACKGROUND LAYER: RADAR MAP -->
-        <!-- The canvas fills the container behind the HUD -->
-        <canvas id="radarCanvas" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index: 0;"></canvas>
-
-        <!-- HUD GRID (Floating Widgets) -->
-        <div class="hud-grid" style="z-index: 1;">
-            
-            <!-- TOP LEFT: STATUS -->
-            <div class="hud-panel" style="grid-column: 1; grid-row: 1;">
-                <div class="hud-title">SYSTEM STATUS</div>
-                <div style="font-size: 0.8rem; color: var(--neon-green);">
-                    ONLINE <span style="animation: blink 1s infinite;">●</span><br>
-                    NET: <span style="cursor:pointer;" onclick="Hardware.toggleTor()">ONION / MESH</span><br>
-                    GPS: <span style="color:var(--text-bright);">3D FIX</span><br>
-                    <span id="ai-threat-hud">THREAT: CALCULATING...</span>
-                </div>
-            </div>
-
-            <!-- TOP RIGHT: CLOCK & PANIC -->
-            <div class="clock-widget" style="grid-column: 3; grid-row: 1; display: flex; flex-direction: column; align-items: flex-end;">
-                <div id="clock">00:00:00</div>
-                <div style="font-size: 0.8rem; color: var(--neon-cyan); opacity: 0.7;">UTC-3</div>
-                <button onclick="Panic.trigger()" style="background: red; color: white; border: 1px solid white; font-weight: bold; font-size: 0.6rem; cursor: pointer; margin-top: 5px; animation: blink 2s infinite;">⚠️ PANIC WIPE</button>
-            </div>
-
-            <!-- BOTTOM LEFT: NODE LIST -->
-            <div class="hud-panel" style="grid-column: 1; grid-row: 2 / span 2; overflow: hidden; display: flex; flex-direction: column;">
-                <div class="hud-title">
-                    <span onclick="document.getElementById('node-list').style.display='block'; document.getElementById('resource-list').style.display='none';">NODES</span> / 
-                    <span onclick="document.getElementById('resource-list').style.display='block'; document.getElementById('node-list').style.display='none';" style="cursor: pointer; color: var(--text-dim);">RESOURCES</span>
-                </div>
-                
-                <div id="node-list" style="overflow-y: auto; flex: 1; font-size: 0.8rem;">
-                    <!-- Populated via JS -->
-                    <div style="color: var(--text-dim); padding: 5px;">SCANNING...</div>
-                </div>
-                
-                <div id="resource-list" style="display: none; overflow-y: auto; flex: 1; font-size: 0.8rem;">
-                    <!-- Added by JS -->
-                    <button onclick="Resources.openAddModal()" style="width: 100%; border: 1px dashed var(--neon-cyan); color: var(--neon-cyan);">+ MARK LOOT</button>
-                </div>
-            </div>
-
-            <!-- BOTTOM RIGHT: COMMS -->
-            <div class="hud-panel" style="grid-column: 3; grid-row: 2 / span 2; display: flex; flex-direction: column;">
-                <div class="hud-title">
-                    SECURE COMMS 
-                    <label style="cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: 0.6rem; color: var(--text-dim);">
-                        <input type="checkbox" id="translate-toggle"> TRANSLATE
-                    </label>
-                </div>
-                
-                <div id="chat-box" style="flex: 1; overflow-y: auto; font-size: 0.8rem; margin-bottom: 10px; padding-right: 5px;">
-                    <!-- Messages -->
-                </div>
-                
-                <div style="display: flex; gap: 5px;">
-                    <select id="msg-target" class="input-aeon" style="width: 80px;">
-                        <option value="PUBLIC">PUB</option>
-                    </select>
-                    <input type="text" id="msg-input" class="input-aeon" placeholder="CMD...">
-                    <button id="send-btn" class="btn-aeon">SEND</button>
-                </div>
-            </div>
-
-            <!-- BOTTOM CENTER: LOGS (Collapsed) -->
-            <div class="hud-panel" style="grid-column: 2; grid-row: 3; height: 100%; opacity: 0.8;">
-                <div class="hud-title">SYSTEM LOG</div>
-                <div id="system-log" style="font-family: var(--font-code); font-size: 0.7rem; color: var(--text-dim); overflow-y: hidden;">
-                    > AEON UI LOADED.<br>
-                    > WAITING FOR TELEMETRY...
-                </div>
-            </div>
-
+<body data-bootstrap="<?= $bootstrapJson ?>">
+<div class="page">
+    <header class="topbar">
+        <div class="brand">
+            <div class="eyebrow">SOS / OPS MATRIX</div>
+            <h1 data-i18n="hero_title">Emergency Network Control Center</h1>
+            <p data-i18n="hero_subtitle">This portal consolidates app builds, transport matrix, version records, and community preparedness playbooks.</p>
         </div>
+        <div class="topbar-controls">
+            <label class="pill" for="langSelect"><span data-i18n="lang_label">Language</span></label>
+            <select id="langSelect" class="select-control">
+                <option value="en">English</option>
+                <option value="pt">Português</option>
+                <option value="es">Español</option>
+                <option value="fr">Français</option>
+                <option value="de">Deutsch</option>
+                <option value="ar">العربية</option>
+                <option value="ru">Русский</option>
+                <option value="zh">中文</option>
+            </select>
+        </div>
+    </header>
+
+    <div class="layout">
+        <section class="panel">
+            <h2 data-i18n="app_name">SOS Command Portal</h2>
+            <p class="panel-subtitle" data-i18n="app_tagline">Crisis-ready operations, downloads, and preparedness in one place.</p>
+
+            <div class="hero-grid">
+                <article class="stat">
+                    <div class="label" data-i18n="status_api">API status</div>
+                    <div class="value"><span id="apiDot" class="dot"></span> <span id="apiStatusText" data-i18n="loading">Loading...</span></div>
+                </article>
+                <article class="stat">
+                    <div class="label" data-i18n="status_manifest">Artifact manifest</div>
+                    <div class="value"><span id="manifestDot" class="dot"></span> <span id="manifestStatusText" data-i18n="loading">Loading...</span></div>
+                </article>
+                <article class="stat">
+                    <div class="label" data-i18n="status_node">Node ID</div>
+                    <div class="value" id="nodeValue">--</div>
+                </article>
+                <article class="stat">
+                    <div class="label" data-i18n="status_country">Detected country</div>
+                    <div class="value" id="countryValue">--</div>
+                </article>
+            </div>
+
+            <div class="section">
+                <h3 data-i18n="downloads_title">App Catalog and Downloads</h3>
+                <p data-i18n="downloads_subtitle">Edition bundles are generated locally and published with SHA-256 checksums.</p>
+                <div class="action-row">
+                    <button class="btn" id="refreshBtn" data-i18n="downloads_refresh">Refresh data</button>
+                </div>
+                <p class="panel-subtitle"><span data-i18n="downloads_last_update">Last update</span>: <strong id="manifestTimestamp">--</strong></p>
+                <div id="downloadsList" class="download-list"></div>
+            </div>
+
+            <div class="section">
+                <h3 data-i18n="matrix_title">Technology Matrix</h3>
+                <p data-i18n="matrix_subtitle">Live matrix data from assets/data/matrix.json with implementation status per platform.</p>
+                <div class="table-wrap">
+                    <table class="matrix-table">
+                        <thead>
+                        <tr>
+                            <th data-i18n="matrix_platform">Platform</th>
+                            <th data-i18n="matrix_version">Version</th>
+                            <th data-i18n="matrix_protocol">Protocol</th>
+                            <th data-i18n="matrix_capabilities">Capabilities</th>
+                            <th data-i18n="matrix_interop">Interop</th>
+                            <th data-i18n="matrix_status">Status</th>
+                        </tr>
+                        </thead>
+                        <tbody id="matrixBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <aside class="panel">
+            <section class="section">
+                <h3 data-i18n="versions_title">Versions and Legacy Pages</h3>
+                <p data-i18n="versions_subtitle">Manifest timestamp plus direct access to legacy operational pages.</p>
+                <p class="panel-subtitle"><span data-i18n="versions_manifest">Manifest generated at</span>: <strong id="versionsManifest">--</strong></p>
+                <p class="panel-subtitle" data-i18n="versions_legacy_links">Legacy modules</p>
+                <div class="links">
+                    <a href="matrix.php" data-i18n="legacy_matrix">Matrix (legacy page)</a>
+                    <a href="versions.php" data-i18n="legacy_versions">Versions ledger</a>
+                    <a href="firmware.php" data-i18n="legacy_firmware">Firmware foundry</a>
+                    <a href="monitor.php" data-i18n="legacy_monitor">Watchtower monitor</a>
+                    <a href="prep.php" data-i18n="legacy_prep">Preparation page</a>
+                    <a href="profile.php" data-i18n="profile_title">Operator Profile</a>
+                </div>
+            </section>
+
+            <section class="section">
+                <h3 data-i18n="prep_title">Preparedness Guide (FEMA/Ready-Inspired)</h3>
+                <p data-i18n="prep_subtitle">Operational steps by scenario for flood, fire, earthquake, storm, evacuation, sheltering, communications, mental health, and recovery.</p>
+                <div id="scenarioGrid" class="scenario-grid"></div>
+            </section>
+
+            <section class="section">
+                <h3 data-i18n="refs_title">Official References</h3>
+                <p data-i18n="refs_subtitle">Use these sources for authoritative guidance and updates.</p>
+                <div id="refList" class="refs"></div>
+            </section>
+        </aside>
     </div>
-            <!-- EXPERIMENTAL: HARDWARE PANEL (Bottom Left Expanded) -->
-            <div class="hud-panel" style="grid-column: 1; grid-row: 3; display: flex; gap: 5px; align-items: center; justify-content: space-around; flex-wrap: wrap;">
-               <div class="hud-btn" onclick="Hardware.connectSerial()" title="Connect LoRa/GPS">🔌 SERIAL</div>
-               <div class="hud-btn" onclick="OfflineMaps.downloadRegion()" title="Cache Offline Maps">🗺️ MAPS</div>
-               <div class="hud-btn" onclick="Sonar.txBeacon()" title="Send Sonar Ping">🔊 SONAR</div>
-               <div class="hud-btn" onclick="Sensors.requestPermission()" title="Calibrate Compass">🧭 CALIB</div>
-               <!-- NEW V20 -->
-               <div class="hud-btn" onclick="UI.toggleDeadDrop()" title="Encrypted Notes">🔒 SAFE</div>
-               <div class="hud-btn" onclick="UI.toggleStego()" title="Hidden Messages">🕵️ STEGO</div>
-            </div>
 
-        </div>
-
-        <!-- OVERLAY: COMPASS HUD -->
-        <div id="hud-compass" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 200px; height: 200px; border: 1px dashed rgba(0,255,255,0.2); border-radius: 50%; pointer-events: none; z-index: 0; display: flex; justify-content: center; transition: transform 0.2s;">
-            <div style="position: absolute; top: -10px; color: var(--neon-cyan); font-size: 0.8rem;">N</div>
-            <div style="position: absolute; bottom: -10px; color: var(--neon-cyan); font-size: 0.8rem;">S</div>
-            <div style="position: absolute; left: -10px; top: 50%; transform: translateY(-50%); color: var(--neon-cyan); font-size: 0.8rem;">W</div>
-            <div style="position: absolute; right: -10px; top: 50%; transform: translateY(-50%); color: var(--neon-cyan); font-size: 0.8rem;">E</div>
-            <div id="hud-heading-val" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: rgba(0,255,255,0.5); font-size: 2rem;">0°</div>
-        </div>
-
-        <!-- MODAL: WEBRTC CALL -->
-        <div id="call-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; flex-direction: column; align-items: center; justify-content: center;">
-            <h2 class="neon-text-red" id="call-status">CALLING...</h2>
-            <div style="display: flex; gap: 20px; margin-bottom: 20px;">
-                <video id="localVideo" autoplay muted style="width: 150px; border: 1px solid var(--neon-cyan);"></video>
-                <video id="remoteVideo" autoplay style="width: 300px; border: 1px solid var(--neon-red);"></video>
-            </div>
-            <button class="btn-aeon" style="background: red; color: white;" onclick="WebRTC.endCall()">END CALL</button>
-        </div>
-
-        </div>
-
-        <!-- MODAL: MIND AI CONSULTATION -->
-        <div id="mind-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1001; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
-            <div class="hud-panel" style="width: 100%; max-width: 500px; height: 80vh; display: flex; flex-direction: column; border: 1px solid var(--neon-cyan); background: #000; position: relative;">
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid rgba(0,255,255,0.2);">
-                    <h2 class="neon-text-cyan" style="margin:0; font-size: 1.2rem;">MESH MIND AI</h2>
-                    <button class="hud-btn" style="flex: 0; padding: 2px 10px;" onclick="UI.toggleMind()">X</button>
-                </div>
-                
-                <div style="display: flex; gap: 5px; padding: 10px; background: rgba(0,255,255,0.05);">
-                    <div class="hud-btn" onclick="Mind.setAgent('LOG_SOS')">📦 LOG</div>
-                    <div class="hud-btn" id="mind-swarm-btn" onclick="Mind.toggleSwarm()">🐝 SWARM</div>
-                    <div class="hud-btn" id="mind-oth-btn" style="border-color: var(--neon-green); color: var(--neon-green);" onclick="Mind.toggleOTH()">📡 OTH</div>
-                    <div class="hud-btn" id="mind-link-btn" title="Neural & Trauma Interface" onclick="Mind.toggleLink()">🧠 LINK</div>
-                    <div class="hud-btn" id="mind-forge-btn" title="Collective Computing" onclick="Mind.toggleForge()">⚒️ FORGE</div>
-                    <div class="hud-btn" id="mind-kinetic-btn" title="Kinetic Security" onclick="Mind.toggleKinetic()">➰ KINETIC</div>
-                    <div class="hud-btn" id="mind-pwr-btn" title="Predictive Autonomy" onclick="Mind.toggleAutonomy()">🔋 PWR</div>
-                    <div class="hud-btn" id="mind-rf-btn" title="RF Compass" onclick="Mind.toggleRFCompass()">🧭 RF</div>
-                    <div class="hud-btn" id="mind-vision-btn" title="Wi-Fi Sensing" onclick="Mind.toggleVision()">👁️ VISION</div>
-                </div>
-                <div style="display: flex; gap: 5px; background: rgba(0,255,255,0.05); padding: 5px; margin-bottom: 5px;">
-                    <button class="hud-btn" id="mind-seismic-btn" style="flex: 1; border-color: var(--neon-cyan); font-size: 0.7rem; padding: 5px;" onclick="Mind.toggleSeismic()">📳 SÍSMICO</button>
-                    <button class="hud-btn" id="mind-bio-btn" style="flex: 1; border-color: var(--neon-cyan); font-size: 0.7rem; padding: 5px;" onclick="Mind.toggleBio()">❤️ VITAIS</button>
-                    <button class="hud-btn" id="mind-ar-btn" style="flex: 1; border-color: var(--neon-cyan); font-size: 0.7rem; padding: 5px;" onclick="Mind.toggleAR()">👁️ AR</button>
-                    <button class="hud-btn" style="flex: 0.5; border-color: var(--neon-cyan); font-size: 0.7rem; padding: 5px;" onclick="window.location.reload()">🔄</button>
-                </div>
-                <div style="display: flex; gap: 5px; background: rgba(0,255,255,0.05); padding: 5px;">
-                    <div class="hud-btn" id="mind-listen-btn" style="flex: 1; border-color: var(--neon-red);" onclick="Mind.toggleListen()">🎙️ AUTO</div>
-                    <div class="hud-btn" style="flex: 0.2;" onclick="Mind.setListenMode('AUTO')">A</div>
-                    <div class="hud-btn" style="flex: 0.2;" onclick="Mind.setListenMode('MORSE')">M</div>
-                    <div class="hud-btn" style="flex: 0.2;" onclick="Mind.setListenMode('PHONETIC')">P</div>
-                    <div class="hud-btn" style="flex: 0.2;" onclick="Mind.setListenMode('TAP')">T</div>
-                </div>
-                <div id="mind-active-label" style="font-size: 0.7rem; color: var(--neon-cyan); padding: 0 10px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center;">
-                    <div style="display:flex; flex-direction:column;">
-                        <span id="mind-vitals-label">Agente: TAC_SOS</span>
-                        <span id="mind-link-label" style="font-size: 0.6rem;">LINK: STANDBY</span>
-                        <span id="skywave-status-label" style="font-size: 0.6rem;"></span>
-                        <span id="vision-status-label" style="font-size: 0.55rem; color: var(--neon-green);"></span>
-                    </div>
-                    <div style="display:flex; gap: 5px; align-items:center;">
-                        <div id="entropy-guage-container" style="width: 4px; height: 25px; background: rgba(0,255,255,0.1); position: relative;" title="Entropy Level">
-                            <div id="entropy-bar" style="position: absolute; bottom: 0; width: 100%; height: 0%; background: var(--neon-green); transition: height 0.3s;"></div>
-                        </div>
-                        <span id="kinetic-lock-icon" style="font-size: 0.8rem; opacity: 0.3; transition: opacity 0.3s;">🔒</span>
-                        <canvas id="rf-radar-canvas" width="60" height="60" style="border-radius: 50%; background: rgba(0,255,255,0.05); border: 1px solid var(--neon-cyan);"></canvas>
-                        <canvas id="neural-pulse-cvs" width="60" height="25" style="border: 1px solid rgba(0,255,150,0.2);"></canvas>
-                        <canvas id="optical-preview" width="50" height="30" style="background: #000; border: 1px solid var(--neon-cyan);"></canvas>
-                    </div>
-                </div>
-
-                <div id="pwr-hud-container" style="padding: 0 10px; margin-bottom: 5px; border-bottom: 1px solid rgba(0,255,255,0.05); padding-bottom: 5px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span id="pwr-status-label" style="font-size: 0.55rem; color: var(--neon-cyan); text-transform: uppercase;">PWR: STANDBY</span>
-                        <div style="display: flex; gap: 3px;">
-                            <div class="hud-btn" style="font-size: 0.5rem; padding: 2px 4px;" onclick="PowerAutonomy.setProfile('ECO')">ECO</div>
-                            <div class="hud-btn" style="font-size: 0.5rem; padding: 2px 4px;" onclick="PowerAutonomy.setProfile('TACTICAL')">TAC</div>
-                        </div>
-                    </div>
-                    <div style="width: 100%; height: 2px; background: rgba(0,255,255,0.1); margin-top: 2px;">
-                        <div id="pwr-persistence-bar" style="width: 100%; height: 100%; background: var(--neon-cyan); transition: width 0.3s;"></div>
-                    </div>
-                </div>
-
-                <div id="forge-hud-container" style="padding: 0 10px; margin-bottom: 5px;">
-                    <div id="forge-status-label" style="font-size: 0.55rem; color: var(--neon-green); text-transform: uppercase;">FORGE: STANDBY</div>
-                    <div style="width: 100%; height: 2px; background: rgba(0,255,100,0.1); margin-top: 2px;">
-                        <div id="forge-power-bar" style="width: 0%; height: 100%; background: var(--neon-green); transition: width 0.3s;"></div>
-                    </div>
-                </div>
-
-                <div id="mind-chat-log" style="flex: 1; overflow-y: auto; background: rgba(0,0,0,0.8); padding: 10px; border-top: 1px solid rgba(0,255,255,0.1); font-size: 0.85rem; line-height: 1.4; color: #fff;">
-                    <!-- SWARM DASHBOARD OVERLAY -->
-                    <div id="swarm-list" style="display:none; background: rgba(0,255,255,0.05); padding: 5px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.1);"></div>
-                    
-                    <div class="mind-entry">
-                        <div class="mind-agent-name" style="color: var(--neon-cyan); font-weight: bold;">[SISTEMA]</div>
-                        <div class="mind-agent-text">Mente da Malha Online. Escolha um agente e faça sua consulta tática.</div>
-                        <hr style="border: 0; border-top: 1px solid rgba(0,255,255,0.1); margin: 10px 0;">
-                    </div>
-                </div>
-
-                <div id="mind-overlay" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; color: var(--neon-cyan); font-weight: bold; z-index: 10;">
-                    CONSULTANDO MENTE...
-                </div>
-
-                <div style="display: flex; gap: 5px; padding: 10px; border-top: 1px solid rgba(0,255,255,0.2);">
-                    <input type="text" id="mind-input" placeholder="Perguntar à malha..." style="flex: 1; background: #111; border: 1px solid var(--neon-cyan); color: var(--neon-cyan); padding: 8px; font-family: monospace;">
-                    <button class="hud-btn" style="flex: 0; padding: 5px 15px; background: var(--neon-red); color: white;" onclick="Mind.generateSignal()" title="Generate SOS Morse Audio">SIGNAL</button>
-                    <button class="hud-btn" style="flex: 0; padding: 5px 15px; border-color: var(--neon-red); color: var(--neon-red);" onclick="Mind.generatePhonetic()" title="NATO Alpha-Zulu Voice">ALPHA</button>
-                    <button class="hud-btn" style="flex: 0; padding: 5px 10px;" onclick="Mind.generateTap()" title="Tap Code (Knocking)">TAP</button>
-                    <button class="hud-btn" id="mind-stealth-btn" style="flex: 0; padding: 5px 10px; border-color: var(--neon-red); color: var(--neon-red);" onclick="Mind.toggleStealth()" title="Hide Signal in Noise">STEALTH</button>
-                    <button class="hud-btn" style="flex: 0; padding: 5px 15px; background: var(--neon-cyan); color: #000;" onclick="Mind.consult(document.getElementById('mind-input').value)">SEND</button>
-                </div>
-            </div>
-        </div>
-
-    </div>
+    <p class="footer-note" data-i18n="footer_text">Initial language uses location hints when available. Your preference is stored locally and synced by Node ID.</p>
 </div>
-
-<!-- STYLES FOR EXPERIMENTAL -->
-<style>
-.hud-btn {
-    border: 1px solid var(--neon-cyan);
-    padding: 5px 10px;
-    font-size: 0.7rem;
-    cursor: pointer;
-    color: var(--neon-cyan);
-    text-align: center;
-    background: rgba(0,0,0,0.5);
-    flex: 1 1 30%; /* Wrap if needed */
-}
-.hud-btn:hover { background: var(--neon-cyan); color: #000; }
-</style>
-
-</style>
-
-<!-- TACTICAL AR OVERLAY -->
-<div id="mind-ar-view" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;">
-    <canvas id="ar-canvas" style="width: 100%; height: 100%;"></canvas>
-    <canvas id="vision-overlay-canvas" style="width: 100%; height: 100%; position: absolute; top: 0; left: 0; opacity: 0.7; mix-blend-mode: screen;"></canvas>
-</div>
-
-<!-- AR OVERLAY LAYER -->
-<div id="ar-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 5; pointer-events: none;">
-    <video id="ar-video" style="width: 100%; height: 100%; object-fit: cover;" autoplay playsinline muted></video>
-    <canvas id="ar-canvas" width="1920" height="1080" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></canvas>
-</div>
-
-<!-- MODULES -->
-<script src="assets/js/modules/webrtc.js"></script>
-<script src="assets/js/modules/hardware.js"></script>
-<script src="assets/js/modules/sonar.js"></script>
-<script src="assets/js/modules/sensors.js"></script>
-<script src="assets/js/modules/steganography.js"></script>
-<script src="assets/js/modules/audio_intelligence.js"></script>
-<script src="assets/js/modules/seismic_intel.js"></script>
-<script src="assets/js/modules/bio_sync.js"></script>
-<script src="assets/js/modules/tactical_ar.js"></script>
-<script src="assets/js/modules/swarm_mesh.js"></script>
-<script src="assets/js/modules/skywave_link.js"></script>
-<script src="assets/js/modules/mind_link.js"></script>
-<script src="assets/js/modules/mesh_forge.js"></script>
-<script src="assets/js/modules/kinetic_security.js"></script>
-<script src="assets/js/modules/power_autonomy.js"></script>
-<script src="assets/js/modules/rf_compass.js"></script>
-<script src="assets/js/modules/wifi_sensing.js"></script>
-<script src="assets/js/modules/mind.js"></script>
-<script src="assets/js/modules/deaddrop.js"></script>
-<script src="assets/js/modules/panic.js"></script>
-<script src="assets/js/modules/ai_lite.js"></script>
-<script src="assets/js/modules/offline_maps.js"></script>
-<script src="assets/js/modules/resources.js"></script>
 
 <script type="module">
-    import { initMesh } from './assets/js/modules/mesh.js';
-    import { initUI } from './assets/js/modules/ui.js';
-    
-    // UI Helpers for Clock
-    function updateClock() {
-        const now = new Date();
-        document.getElementById('clock').innerText = now.toLocaleTimeString();
+    import {
+        applyTranslations,
+        createOrGetNodeId,
+        onLanguageChange,
+        resolveInitialLanguage,
+        setLanguage,
+        t,
+    } from './assets/js/modules/i18n.js';
+
+    const bootstrap = JSON.parse(document.body.dataset.bootstrap || '{"language":"en","country":null}');
+    const nodeId = createOrGetNodeId();
+
+    const apiDot = document.getElementById('apiDot');
+    const apiStatusText = document.getElementById('apiStatusText');
+    const manifestDot = document.getElementById('manifestDot');
+    const manifestStatusText = document.getElementById('manifestStatusText');
+
+    const nodeValue = document.getElementById('nodeValue');
+    const countryValue = document.getElementById('countryValue');
+    const langSelect = document.getElementById('langSelect');
+
+    const downloadsList = document.getElementById('downloadsList');
+    const manifestTimestamp = document.getElementById('manifestTimestamp');
+    const versionsManifest = document.getElementById('versionsManifest');
+    const matrixBody = document.getElementById('matrixBody');
+    const scenarioGrid = document.getElementById('scenarioGrid');
+    const refList = document.getElementById('refList');
+
+    nodeValue.textContent = nodeId;
+    countryValue.textContent = bootstrap.country || '--';
+
+    const languageNames = {
+        en: 'English',
+        pt: 'Portugues',
+        es: 'Espanol',
+        fr: 'Francais',
+        de: 'Deutsch',
+        ar: 'العربية',
+        ru: 'Русский',
+        zh: '中文',
+    };
+
+    const scenarioConfig = [
+        { title: 'scenario_flood_title', steps: 'scenario_flood_steps' },
+        { title: 'scenario_fire_title', steps: 'scenario_fire_steps' },
+        { title: 'scenario_quake_title', steps: 'scenario_quake_steps' },
+        { title: 'scenario_storm_title', steps: 'scenario_storm_steps' },
+        { title: 'scenario_evac_title', steps: 'scenario_evac_steps' },
+        { title: 'scenario_shelter_title', steps: 'scenario_shelter_steps' },
+        { title: 'scenario_comms_title', steps: 'scenario_comms_steps' },
+        { title: 'scenario_mental_title', steps: 'scenario_mental_steps' },
+        { title: 'scenario_recovery_title', steps: 'scenario_recovery_steps' },
+    ];
+
+    const referenceConfig = [
+        { key: 'ref_fema_allhazards', url: 'https://www.fema.gov/emergency-managers/practitioners' },
+        { key: 'ref_ready_plan', url: 'https://www.ready.gov/plan' },
+        { key: 'ref_ready_kit', url: 'https://www.ready.gov/kit' },
+        { key: 'ref_ready_flood', url: 'https://www.ready.gov/floods' },
+        { key: 'ref_ready_fire', url: 'https://www.ready.gov/wildfires' },
+        { key: 'ref_ready_quake', url: 'https://www.ready.gov/earthquakes' },
+        { key: 'ref_988', url: 'https://988lifeline.org/' },
+    ];
+
+    let manifestCache = null;
+    let matrixCache = [];
+
+    function formatBytes(bytes) {
+        if (!Number.isFinite(bytes) || bytes <= 0) return '0 B';
+        const units = ['B', 'KB', 'MB', 'GB'];
+        const exp = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+        const value = bytes / Math.pow(1024, exp);
+        return `${value.toFixed(exp === 0 ? 0 : 2)} ${units[exp]}`;
     }
-    setInterval(updateClock, 1000);
-    updateClock();
 
-    document.addEventListener('DOMContentLoaded', () => {
-        initUI(); // Initialize UI helpers
-        initMesh(); // Start Mesh Protocol
-        
-        // Init Experimental Modules
-        setTimeout(() => {
-            if(window.WebRTC) WebRTC.init();
-            if(window.Hardware) Hardware.init();
-            if(window.Sonar) Sonar.init();
-            if(window.Sensors) Sensors.init();
-            if(window.Steganography) Steganography.init();
-            if(window.DeadDrop) DeadDrop.init();
-            if(window.Panic) Panic.init();
-            if(window.AILite) AILite.init();
-            if(window.OfflineMaps) OfflineMaps.init();
-            if(window.Resources) Resources.init();
-            if(window.AudioIntelligence) AudioIntelligence.init();
-            if(window.SeismicIntel) SeismicIntel.init();
-            if(window.BioSync) BioSync.init();
-            if(window.TacticalAR) TacticalAR.init();
-        }, 1000);
-        
-        // Expose UI Helpers for new buttons (Quick Hack)
-        window.UI.toggleDeadDrop = () => {
-            const pwd = prompt("ENTER SAFE PASSWORD:");
-            if(!pwd) return;
-            const action = confirm("LOAD (OK) or SAVE (Cancel)?");
-            if(action) {
-                DeadDrop.load("NOTES", pwd).then(t => alert(t ? "CONTENT:\n" + t : "DECRYPT FAIL"));
-            } else {
-                const data = prompt("ENTER SECRET DATA:");
-                if(data) DeadDrop.save("NOTES", data, pwd);
+    function updateStatus(target, label, ok) {
+        target.classList.remove('ok', 'fail');
+        target.classList.add(ok ? 'ok' : 'fail');
+        label.textContent = ok ? t('status_online', 'ONLINE') : t('status_offline', 'OFFLINE');
+    }
+
+    async function getJson(url) {
+        const response = await fetch(url, { cache: 'no-store' });
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+        return response.json();
+    }
+
+    function editionLabel(edition) {
+        switch (edition) {
+            case 'mini':
+                return t('download_section_mini', 'Mini edition');
+            case 'standard':
+                return t('download_section_standard', 'Standard edition');
+            case 'server':
+                return t('download_section_server', 'Server edition');
+            case 'java':
+                return t('download_section_java', 'Java');
+            default:
+                return edition;
+        }
+    }
+
+    function renderDownloads() {
+        const manifest = manifestCache;
+        downloadsList.innerHTML = '';
+
+        if (!manifest || !Array.isArray(manifest.artifacts) || manifest.artifacts.length === 0) {
+            downloadsList.innerHTML = `<div class="download-card">${t('downloads_empty', 'No artifacts found in manifest.')}</div>`;
+            manifestTimestamp.textContent = '--';
+            versionsManifest.textContent = '--';
+            return;
+        }
+
+        manifestTimestamp.textContent = manifest.generatedAt || '--';
+        versionsManifest.textContent = manifest.generatedAt || '--';
+
+        const grouped = { mini: [], standard: [], server: [], java: [] };
+        for (const artifact of manifest.artifacts) {
+            const path = String(artifact.path || '');
+            const head = path.split('/')[0];
+            if (grouped[head]) {
+                grouped[head].push(artifact);
             }
-        };
-        
-        window.UI.toggleStego = () => {
-            alert("FEATURE: Drop image in Chat to decode, or use Console: Steganography.encode(file, 'text')");
-        };
+        }
 
-        window.UI.toggleMind = () => {
-            const modal = document.getElementById('mind-modal');
-            modal.style.display = (modal.style.display === 'none') ? 'flex' : 'none';
-        };
+        const order = ['mini', 'standard', 'server', 'java'];
+        order.forEach((edition) => {
+            const artifacts = grouped[edition];
+            if (!artifacts || artifacts.length === 0) {
+                return;
+            }
+
+            const card = document.createElement('article');
+            card.className = 'download-card';
+            card.innerHTML = `<h4>${editionLabel(edition)}</h4>`;
+
+            const list = document.createElement('ul');
+            artifacts.forEach((artifact) => {
+                const fileName = String(artifact.path || '').split('/').pop();
+                const size = formatBytes(Number(artifact.size || 0));
+                const item = document.createElement('li');
+                item.innerHTML = `<a href="downloads/${artifact.path}">${fileName}</a> <span class="panel-subtitle">(${size})</span>`;
+                list.appendChild(item);
+            });
+
+            card.appendChild(list);
+            downloadsList.appendChild(card);
+        });
+    }
+
+    function renderMatrix() {
+        matrixBody.innerHTML = '';
+
+        if (!Array.isArray(matrixCache) || matrixCache.length === 0) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td colspan="6">${t('manifest_unavailable', 'Manifest unavailable')}</td>`;
+            matrixBody.appendChild(tr);
+            return;
+        }
+
+        matrixCache.forEach((row) => {
+            const statusRaw = String(row.status || '').toLowerCase();
+            const badgeClass = statusRaw === 'active' ? 'active' : (statusRaw === 'legacy' ? 'legacy' : 'dev');
+            const statusKey = statusRaw === 'active' ? 'status_active' : (statusRaw === 'legacy' ? 'status_legacy' : 'status_dev');
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${row.platform || '--'}</td>
+                <td>${row.version || '--'}</td>
+                <td>${row.protocol || '--'}</td>
+                <td>${Array.isArray(row.capabilities) ? row.capabilities.join(', ') : '--'}</td>
+                <td>${Array.isArray(row.interop) ? row.interop.join(', ') : '--'}</td>
+                <td><span class="badge ${badgeClass}">${t(statusKey, row.status || '--')}</span></td>
+            `;
+            matrixBody.appendChild(tr);
+        });
+    }
+
+    function renderScenarios() {
+        scenarioGrid.innerHTML = '';
+
+        scenarioConfig.forEach((entry) => {
+            const card = document.createElement('article');
+            card.className = 'scenario-card';
+            const title = t(entry.title, entry.title);
+            const steps = String(t(entry.steps, '')).split('|').filter(Boolean);
+            const listItems = steps.map((step) => `<li>${step}</li>`).join('');
+            card.innerHTML = `<h4>${title}</h4><ol>${listItems}</ol>`;
+            scenarioGrid.appendChild(card);
+        });
+    }
+
+    function renderReferences() {
+        refList.innerHTML = '';
+
+        referenceConfig.forEach((entry) => {
+            const link = document.createElement('a');
+            link.href = entry.url;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            link.textContent = t(entry.key, entry.key);
+            refList.appendChild(link);
+        });
+    }
+
+    async function refreshAll() {
+        try {
+            await getJson('api/status.php');
+            updateStatus(apiDot, apiStatusText, true);
+        } catch (_) {
+            updateStatus(apiDot, apiStatusText, false);
+        }
+
+        try {
+            manifestCache = await getJson('downloads/manifest.json');
+            updateStatus(manifestDot, manifestStatusText, true);
+        } catch (_) {
+            manifestCache = null;
+            updateStatus(manifestDot, manifestStatusText, false);
+        }
+
+        try {
+            matrixCache = await getJson('assets/data/matrix.json');
+        } catch (_) {
+            matrixCache = [];
+        }
+
+        renderDownloads();
+        renderMatrix();
+        renderScenarios();
+        renderReferences();
+    }
+
+    function applyLanguageOptionLabels() {
+        for (const option of langSelect.options) {
+            option.textContent = languageNames[option.value] || option.value;
+        }
+    }
+
+    document.getElementById('refreshBtn').addEventListener('click', refreshAll);
+
+    langSelect.addEventListener('change', async (event) => {
+        const value = event.target.value;
+        await setLanguage(value, {
+            persist: true,
+            nodeId,
+            country: bootstrap.country || null,
+        });
     });
+
+    onLanguageChange((lang) => {
+        langSelect.value = lang;
+        applyTranslations(document);
+        applyLanguageOptionLabels();
+        renderDownloads();
+        renderMatrix();
+        renderScenarios();
+        renderReferences();
+    });
+
+    (async () => {
+        const initial = await resolveInitialLanguage({
+            nodeId,
+            serverHintLang: bootstrap.language || 'en',
+            serverHintCountry: bootstrap.country || null,
+            navigatorLang: navigator.language,
+        });
+
+        await setLanguage(initial.language, {
+            persist: true,
+            nodeId,
+            country: initial.country || bootstrap.country || null,
+        });
+
+        langSelect.value = initial.language;
+        applyLanguageOptionLabels();
+
+        await refreshAll();
+    })();
 </script>
-
-<style>
-@keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
-</style>
-
 </body>
 </html>

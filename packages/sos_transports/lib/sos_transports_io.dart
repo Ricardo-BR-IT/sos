@@ -24,6 +24,7 @@ export 'transport/zigbee_transport.dart';
 export 'transport/webrtc_transport.dart';
 // Wave 7
 export 'transport/aprs_transport.dart';
+export 'transport/aprs_bridge_transport.dart';
 export 'transport/aprs_serial_transport.dart';
 export 'transport/iridium_serial_transport.dart';
 // Wave 8

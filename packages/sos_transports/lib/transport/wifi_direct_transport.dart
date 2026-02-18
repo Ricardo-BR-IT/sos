@@ -150,7 +150,6 @@ class WiFiDirectTransport extends BaseTransport {
     }
   }
 
-  @override
   Future<void> toggle() async {
     if (_running) {
       await stop();
@@ -160,7 +159,7 @@ class WiFiDirectTransport extends BaseTransport {
   }
 
   @override
-  bool get enabled => _running;
+  bool get isEnabled => _running;
 
   @override
   void setLocalId(String id) {

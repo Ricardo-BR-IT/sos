@@ -69,6 +69,37 @@ class TestTransport extends BaseTransport {
   Future<void> connect(String peerId) async {}
 }
 
+TransportPacket signPacket(TransportPacket packet) {
+  final authPayload =
+      '${packet.id}|${packet.senderId}|${packet.type.index}|${packet.timestamp.millisecondsSinceEpoch}';
+  return packet.copyWith(signature: 'sig_$authPayload');
+}
+
+SosEnvelope createSignedEnvelope({
+  required String sender,
+  required String type,
+  required Map<String, dynamic> payload,
+  required int timestamp,
+}) {
+  final envelope = SosEnvelope(
+    version: 1,
+    type: type,
+    sender: sender,
+    timestamp: timestamp,
+    payload: payload,
+    signature: '',
+  );
+  final signature = 'sig_${envelope.canonicalBody()}';
+  return SosEnvelope(
+    version: envelope.version,
+    type: envelope.type,
+    sender: envelope.sender,
+    timestamp: envelope.timestamp,
+    payload: envelope.payload,
+    signature: signature,
+  );
+}
+
 void main() {
   group('MeshService', () {
     late MeshService meshService;
@@ -87,14 +118,12 @@ void main() {
     });
 
     test('should receive and deduplicate valid signed packets', () async {
-      final payload = 'msg_1|node_b|2|${DateTime.now().millisecondsSinceEpoch}';
-      final packet = TransportPacket(
+      final packet = signPacket(TransportPacket(
         id: 'msg_1',
         senderId: 'node_b',
         type: SosPacketType.data,
         payload: {'msg': 'hello'},
-        signature: 'sig_$payload',
-      );
+      ));
 
       final future = meshService.incomingPackets.first;
 
@@ -124,18 +153,16 @@ void main() {
 
     test('should forward valid broadcast signed packets with decremented TTL',
         () async {
-      final now = DateTime.now().millisecondsSinceEpoch;
-      final payload = 'msg_2|node_b|2|$now';
-      final packet = TransportPacket(
+      final now = DateTime.now();
+      final packet = signPacket(TransportPacket(
         id: 'msg_2',
         senderId: 'node_b',
         recipientId: null, // Broadcast
         type: SosPacketType.data,
         payload: {'msg': 'hello'},
-        timestamp: DateTime.fromMillisecondsSinceEpoch(now),
+        timestamp: now,
         ttl: 5,
-        signature: 'sig_$payload',
-      );
+      ));
 
       await meshService.receivePacket(packet);
 
@@ -156,18 +183,16 @@ void main() {
     });
 
     test('should NOT forward packets destined for local node', () async {
-      final now = DateTime.now().millisecondsSinceEpoch;
-      final payload = 'msg_3|node_b|2|$now';
-      final packet = TransportPacket(
+      final now = DateTime.now();
+      final packet = signPacket(TransportPacket(
         id: 'msg_3',
         senderId: 'node_b',
         recipientId: localId,
         type: SosPacketType.data,
         payload: {'msg': 'for you'},
-        timestamp: DateTime.fromMillisecondsSinceEpoch(now),
+        timestamp: now,
         ttl: 5,
-        signature: 'sig_$payload',
-      );
+      ));
 
       await meshService.receivePacket(packet);
 
@@ -191,23 +216,25 @@ void main() {
     test('should automatically respond to diag_ping with signed diag_pong',
         () async {
       final pingAt = DateTime.now().millisecondsSinceEpoch;
-      final pingEnvelope = await SosEnvelope.sign(
-        core: mockCore,
+      final pingEnvelope = createSignedEnvelope(
+        sender: 'node_b',
         type: 'diag_ping',
         payload: {
           'diagId': 'test_diag',
           'sentAt': pingAt,
         },
+        timestamp: pingAt,
       );
 
-      final pingPacket = TransportPacket(
+      final pingPacket = signPacket(TransportPacket(
         senderId: 'node_b',
         type: SosPacketType.data,
         payload: pingEnvelope.toJson(),
         rxTransportId: 'udp_1',
-      );
+      ));
 
       await meshService.receivePacket(pingPacket);
+      await Future.delayed(const Duration(milliseconds: 25));
 
       // Verify a pong was sent back
       final pongPacket = transport.sentPackets.firstWhere(
@@ -224,12 +251,12 @@ void main() {
     });
 
     test('should deduplicate packets using Bloom Filter and Set', () async {
-      final packet = TransportPacket(
+      final packet = signPacket(TransportPacket(
         id: 'unique_msg_100',
         senderId: 'node_b',
         type: SosPacketType.data,
         payload: {'msg': 'bloom test'},
-      );
+      ));
 
       int receiveCount = 0;
       meshService.incomingPackets.listen((_) => receiveCount++);

@@ -74,7 +74,9 @@ class VaultDatabase extends _$VaultDatabase {
   Future<List<PendingMessage>> getPendingMessagesForRecipient(
           String? recipientId) =>
       (select(pendingMessages)
-            ..where((t) => t.recipientId.equals(recipientId))
+            ..where((t) => recipientId == null
+                ? t.recipientId.isNull()
+                : t.recipientId.equals(recipientId))
             ..orderBy([(t) => OrderingTerm(expression: t.createdAt)]))
           .get();
 

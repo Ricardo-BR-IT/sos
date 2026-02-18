@@ -1,8 +1,7 @@
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sos_kernel/sos_kernel.dart';
 import 'package:sos_transports/sos_transports_io.dart';
-import 'package:sos_kernel/tech/tech_registry.dart';
-import 'package:sos_kernel/tech/technology.dart';
 
 void main() {
   test('Global Implementation Verification', () {
@@ -80,7 +79,7 @@ void main() {
 
     if (allTestsPassed && allFilesExist) {
       print('  ✅ Implementação está FUNCIONAL!');
-      print('  📈 Tecnologias implementadas: $supportedCount/186');
+      print('  📈 Tecnologias implementadas: $supportedCount/$totalTechs');
       print('  🚀 Pronto para deploy e testes de campo');
     } else {
       print('  ❌ Problemas encontrados na implementação');

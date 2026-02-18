@@ -1,82 +1,181 @@
 <?php
-// SOS AEON: PROFILE (V11)
+
+declare(strict_types=1);
+
+require_once __DIR__ . '/includes/lang_bootstrap.php';
+$bootstrapJson = htmlspecialchars(sos_bootstrap_json(), ENT_QUOTES, 'UTF-8');
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOS PROFILE [AEON]</title>
-    <link rel="stylesheet" href="assets/css/aeon.css">
+    <title>Operator Profile</title>
+    <link rel="stylesheet" href="assets/css/portal.css">
+    <style>
+        .profile-wrap {
+            max-width: 760px;
+            margin: 0 auto;
+        }
+
+        .form-grid {
+            display: grid;
+            gap: 12px;
+            margin-top: 14px;
+        }
+
+        .field {
+            border: 1px solid var(--edge);
+            border-radius: 12px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .field label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--ink-muted);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .field-value {
+            font-family: 'IBM Plex Mono', monospace;
+            word-break: break-all;
+        }
+
+        .toggle-line {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .status-msg {
+            margin-top: 12px;
+            min-height: 18px;
+            color: var(--ink-muted);
+        }
+    </style>
 </head>
-<body>
-
-<div class="app-shell">
-    <?php include 'includes/sidebar.php'; ?>
-
-    <div class="main-content" style="display: flex; justify-content: center; align-items: center;">
-        
-        <div class="hud-panel" style="width: 400px; padding: 30px;">
-            <div class="hud-title">OPERATOR PROFILE</div>
-            
-            <div style="margin: 20px 0;">
-                <label style="color: var(--text-dim); font-size: 0.8rem;">CALL SIGN (NODE ID)</label>
-                <div id="display-id" style="font-size: 1.5rem; color: var(--neon-cyan); font-family: var(--font-code);">LOADING...</div>
-            </div>
-
-            <hr style="border: 0; border-bottom: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
-
-            <div class="hud-title">PRIVACY & TRACKING</div>
-            
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 15px;">
-                <span style="color: #fff;">BROADCAST LOCATION</span>
-                <label class="switch">
-                    <input type="checkbox" id="gps-toggle">
-                    <span class="slider"></span>
-                </label>
-            </div>
-            <div style="font-size: 0.7rem; color: var(--text-dim); margin-top: 5px;">
-                When active, your GPS coordinates are sent to the mesh. Distance to other nodes will be calculated.
-            </div>
-
-            <button onclick="saveProfile()" class="btn-aeon" style="width: 100%; margin-top: 30px;">SAVE CONFIGURATION</button>
-            <div id="save-msg" style="text-align: center; margin-top: 10px; font-size: 0.8rem; color: var(--neon-green); opacity: 0;">SAVED</div>
-
+<body data-bootstrap="<?= $bootstrapJson ?>">
+<div class="page profile-wrap">
+    <header class="topbar">
+        <div class="brand">
+            <div class="eyebrow">SOS / PROFILE</div>
+            <h1 data-i18n="profile_title">Operator Profile</h1>
+            <p data-i18n="profile_subtitle">Persist operational preferences on this device and on the server profile.</p>
         </div>
-    </div>
+        <div class="topbar-controls">
+            <a class="pill" href="index.php" data-i18n="profile_back">Back to portal</a>
+        </div>
+    </header>
+
+    <section class="panel">
+        <div class="form-grid">
+            <div class="field">
+                <label data-i18n="profile_node">Node ID</label>
+                <div id="nodeValue" class="field-value">--</div>
+            </div>
+
+            <div class="field">
+                <div class="toggle-line">
+                    <label style="margin: 0" data-i18n="profile_gps">Broadcast location</label>
+                    <input type="checkbox" id="gpsToggle">
+                </div>
+                <p class="panel-subtitle" data-i18n="profile_gps_help">When enabled, coordinates are published to mesh peers for distance and routing awareness.</p>
+            </div>
+
+            <div class="field">
+                <label for="langSelect" data-i18n="profile_language">Preferred language</label>
+                <select id="langSelect" class="select-control" style="width: 100%; border-radius: 10px;">
+                    <option value="en">English</option>
+                    <option value="pt">Portugues</option>
+                    <option value="es">Espanol</option>
+                    <option value="fr">Francais</option>
+                    <option value="de">Deutsch</option>
+                    <option value="ar">العربية</option>
+                    <option value="ru">Русский</option>
+                    <option value="zh">中文</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="action-row">
+            <button class="btn" id="saveBtn" data-i18n="profile_save">Save profile</button>
+        </div>
+        <div class="status-msg" id="saveMsg"></div>
+    </section>
 </div>
 
-<style>
-/* CUSTOM TOGGLE FOR AEON */
-.switch { position: relative; display: inline-block; width: 40px; height: 20px; }
-.switch input { opacity: 0; width: 0; height: 0; }
-.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 20px; border: 1px solid #555; }
-.slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; }
-input:checked + .slider { background-color: var(--neon-cyan); border-color: var(--neon-cyan); }
-input:checked + .slider:before { transform: translateX(20px); background-color: #000; }
-</style>
+<script type="module">
+    import {
+        createOrGetNodeId,
+        onLanguageChange,
+        resolveInitialLanguage,
+        setLanguage,
+        t,
+    } from './assets/js/modules/i18n.js';
 
-<script>
-    const myId = localStorage.getItem('v7_node_id') || 'UNKNOWN';
-    document.getElementById('display-id').innerText = myId;
-    
-    // Load State
-    const gpsState = localStorage.getItem('v11_gps_active') === 'true';
-    document.getElementById('gps-toggle').checked = gpsState;
+    const bootstrap = JSON.parse(document.body.dataset.bootstrap || '{"language":"en","country":null}');
+    const nodeId = createOrGetNodeId();
+    const gpsKey = 'v11_gps_active';
 
-    function saveProfile() {
-        const isActive = document.getElementById('gps-toggle').checked;
-        localStorage.setItem('v11_gps_active', isActive);
-        
-        // Visual Feedback
-        const msg = document.getElementById('save-msg');
-        msg.style.opacity = 1;
-        setTimeout(() => msg.style.opacity = 0, 2000);
-        
-        // Force immediate sync in other tabs logic would go here, 
-        // but mesh.js picks it up on next heartbeat.
+    const nodeValue = document.getElementById('nodeValue');
+    const gpsToggle = document.getElementById('gpsToggle');
+    const langSelect = document.getElementById('langSelect');
+    const saveBtn = document.getElementById('saveBtn');
+    const saveMsg = document.getElementById('saveMsg');
+
+    nodeValue.textContent = nodeId;
+    gpsToggle.checked = localStorage.getItem(gpsKey) === 'true';
+
+    function showMessage(key, fallback, isError = false) {
+        saveMsg.textContent = t(key, fallback);
+        saveMsg.style.color = isError ? 'var(--accent-red)' : 'var(--accent-cyan)';
     }
-</script>
 
+    onLanguageChange((lang) => {
+        langSelect.value = lang;
+    });
+
+    saveBtn.addEventListener('click', async () => {
+        localStorage.setItem(gpsKey, String(gpsToggle.checked));
+
+        try {
+            await setLanguage(langSelect.value, {
+                persist: true,
+                nodeId,
+                country: bootstrap.country || null,
+            });
+            showMessage('profile_saved', 'Saved and synchronized.');
+        } catch (_) {
+            showMessage('profile_sync_error', 'Saved locally, but server sync failed.', true);
+        }
+
+        setTimeout(() => {
+            saveMsg.textContent = '';
+        }, 2600);
+    });
+
+    (async () => {
+        const initial = await resolveInitialLanguage({
+            nodeId,
+            serverHintLang: bootstrap.language || 'en',
+            serverHintCountry: bootstrap.country || null,
+            navigatorLang: navigator.language,
+        });
+
+        await setLanguage(initial.language, {
+            persist: true,
+            nodeId,
+            country: initial.country || bootstrap.country || null,
+        });
+
+        langSelect.value = initial.language;
+    })();
+</script>
 </body>
 </html>

@@ -24,7 +24,7 @@ Uri? _resolveTelemetryEndpoint() {
 
 class DesktopApp extends StatefulWidget {
   final SosCore core;
-  const DesktopApp({Key? key, required this.core}) : super(key: key);
+  const DesktopApp({super.key, required this.core});
 
   @override
   State<DesktopApp> createState() => _DesktopAppState();
@@ -33,7 +33,6 @@ class DesktopApp extends StatefulWidget {
 class _DesktopAppState extends State<DesktopApp> {
   final TelemetryService _telemetry = TelemetryService.instance;
   MeshService? _meshService;
-  HardwareProfile? _hardwareProfile;
   bool _ready = false;
   String _status = 'Inicializando...';
 
@@ -60,7 +59,6 @@ class _DesktopAppState extends State<DesktopApp> {
   Future<void> _initMesh() async {
     try {
       final profile = await HardwareProfile.detect();
-      _hardwareProfile = profile;
       final meshService = MeshService(
         core: widget.core,
         transport: HybridTransport(activation: profile.activation),

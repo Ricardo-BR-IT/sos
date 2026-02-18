@@ -1,3 +1,4 @@
+// ignore_for_file: unused_field, unused_local_variable, unused_element, deprecated_member_use
 import 'dart:async';
 import 'dart:convert';
 
@@ -172,3 +173,4 @@ class HamDigitalTransport extends TransportLayer {
 }
 
 enum HamDigitalMode { dstar, dmr, fusion, nxdn }
+

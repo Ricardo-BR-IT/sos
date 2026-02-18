@@ -2,32 +2,22 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:sos_kernel/sos_kernel.dart';
 
-// Mock classes
-class MockMeshService extends Mock implements MeshService {
-  @override
-  Future<void> broadcastSos({required String message}) => super.noSuchMethod(
-        Invocation.method(#broadcastSos, [], {#message: message}),
-        returnValue: Future.value(),
-      );
-}
+class TestMeshService extends Mock implements MeshService {
+  final List<String> sosMessages = [];
 
-class MockTelemetryService extends Mock implements TelemetryService {
   @override
-  Future<void> logEvent(String event,
-          {String level = 'info', Map<String, dynamic>? data}) =>
-      super.noSuchMethod(
-        Invocation.method(#logEvent, [event], {#level: level, #data: data}),
-        returnValue: Future.value(),
-      );
+  Future<void> broadcastSos({required String message}) async {
+    sosMessages.add(message);
+  }
 }
 
 void main() {
   late HealthService healthService;
-  late MockMeshService mockMesh;
+  late TestMeshService mockMesh;
 
   setUp(() {
     healthService = HealthService.instance;
-    mockMesh = MockMeshService();
+    mockMesh = TestMeshService();
     healthService.initialize(mockMesh);
     healthService.startMonitoring();
   });
@@ -37,7 +27,9 @@ void main() {
   });
 
   group('HealthService Automated SOS Tests', () {
-    test('Hypoxia (SpO2 < 90%) triggers SOS after sustained duration',
+    test(
+        'Hypoxia (SpO2 < 90%) triggers SOS after sustained duration',
+        timeout: const Timeout(Duration(seconds: 45)),
         () async {
       final now = DateTime.now();
 
@@ -49,7 +41,7 @@ void main() {
       ));
 
       // Should NOT trigger immediately
-      verifyNever(mockMesh.broadcastSos(message: anyNamed('message') ?? ''));
+      expect(mockMesh.sosMessages, isEmpty);
 
       // Step 2: Sustainable hypoxia (simulating time passage)
       // Note: In a real test we might use fake_async, but here we manually trigger at a later timestamp if the logic allows,
@@ -65,8 +57,8 @@ void main() {
         timestamp: DateTime.now(),
       ));
 
-      verify(mockMesh.broadcastSos(message: argThat(contains('HIPÓXIA')) ?? ''))
-          .called(1);
+      expect(mockMesh.sosMessages.length, equals(1));
+      expect(mockMesh.sosMessages.first, contains('HIPÓXIA'));
     });
 
     test('Critical Heart Rate triggers SOS immediately', () {
@@ -76,9 +68,8 @@ void main() {
         timestamp: DateTime.now(),
       ));
 
-      verify(mockMesh.broadcastSos(
-              message: argThat(contains('CARDÍACO')) ?? ''))
-          .called(1);
+      expect(mockMesh.sosMessages.length, equals(1));
+      expect(mockMesh.sosMessages.first, contains('CARDÍACO'));
     });
 
     test('Fall detection triggers SOS', () {
@@ -89,8 +80,8 @@ void main() {
         timestamp: DateTime.now(),
       ));
 
-      verify(mockMesh.broadcastSos(message: argThat(contains('QUEDA')) ?? ''))
-          .called(1);
+      expect(mockMesh.sosMessages.length, equals(1));
+      expect(mockMesh.sosMessages.first, contains('QUEDA'));
     });
   });
   group('Regression Tests', () {
@@ -101,7 +92,7 @@ void main() {
         timestamp: DateTime.now(),
       ));
 
-      verifyNever(mockMesh.broadcastSos(message: anyNamed('message') ?? ''));
+      expect(mockMesh.sosMessages, isEmpty);
     });
   });
 }

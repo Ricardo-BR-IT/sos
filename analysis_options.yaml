@@ -1,0 +1,5 @@
+analyzer:
+  exclude:
+    - deploy_stage/**
+    - deploy_stage_web/**
+    - build/**

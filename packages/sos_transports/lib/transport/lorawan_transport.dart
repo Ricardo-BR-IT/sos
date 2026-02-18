@@ -1,3 +1,4 @@
+// ignore_for_file: unused_field, unused_local_variable, unused_element, deprecated_member_use
 import 'dart:async';
 
 import 'transport_layer.dart';
@@ -81,3 +82,4 @@ class LoRaWanTransport extends TransportLayer {
     await _incomingController.close();
   }
 }
+
