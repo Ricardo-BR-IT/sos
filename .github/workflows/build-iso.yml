@@ -17,7 +17,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'BUILD_ISO.sh'
+      - '_dev/BUILD_ISO.sh'
       - 'iso_builder/**'
 
 permissions:
@@ -69,9 +69,9 @@ jobs:
 
       - name: Build ${{ matrix.edition }} ISO
         run: |
-          chmod +x BUILD_ISO.sh
+          chmod +x _dev/BUILD_ISO.sh
           chmod +x iso_builder/assets/${{ matrix.edition }}/${{ matrix.edition }}_setup.sh
-          sudo ./BUILD_ISO.sh ${{ matrix.edition }}
+          sudo ./_dev/BUILD_ISO.sh ${{ matrix.edition }}
 
       - name: Upload ISO Artifact
         uses: actions/upload-artifact@v4
