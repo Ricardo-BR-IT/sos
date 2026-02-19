@@ -1,0 +1,196 @@
+name: build-apps-autocompiled
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * *'
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/mobile_app/**'
+      - 'apps/tv_router/**'
+      - 'apps/wearable_app/**'
+      - 'apps/desktop_station/**'
+      - 'java/**'
+      - '.github/workflows/build-apps-autocompiled.yml'
+      - 'scripts/build_apps_parallel.ps1'
+      - 'scripts/build_artifacts_sequential.ps1'
+      - 'scripts/build_java.ps1'
+
+permissions:
+  contents: read
+
+jobs:
+  android_apks:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        edition: [mini, standard, server]
+        app: [mobile_app, tv_router, wearable_app]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Build Android APK (${{ matrix.app }} / ${{ matrix.edition }})
+        working-directory: apps/${{ matrix.app }}
+        run: |
+          flutter pub get
+          flutter build apk --release --dart-define=EDITION=${{ matrix.edition }}
+
+      - name: Stage Android artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "ci_artifacts/android/${{ matrix.edition }}"
+          case "${{ matrix.app }}" in
+            mobile_app) prefix="mobile" ;;
+            tv_router) prefix="tv" ;;
+            wearable_app) prefix="wear" ;;
+            *) echo "Unsupported app: ${{ matrix.app }}" >&2; exit 1 ;;
+          esac
+          cp "apps/${{ matrix.app }}/build/app/outputs/flutter-apk/app-release.apk" \
+             "ci_artifacts/android/${{ matrix.edition }}/${prefix}-${{ matrix.edition }}.apk"
+
+      - name: Upload Android artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-${{ matrix.app }}-${{ matrix.edition }}
+          path: ci_artifacts/android/${{ matrix.edition }}/*.apk
+          if-no-files-found: error
+
+  windows_portable:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        edition: [mini, standard, server]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Build Windows desktop (${{ matrix.edition }})
+        working-directory: apps/desktop_station
+        shell: pwsh
+        run: |
+          flutter pub get
+          if (Test-Path "windows\flutter\ephemeral\.plugin_symlinks") {
+            Remove-Item -Recurse -Force "windows\flutter\ephemeral\.plugin_symlinks" -ErrorAction SilentlyContinue
+          }
+          flutter build windows --release --dart-define=EDITION=${{ matrix.edition }}
+
+      - name: Stage portable ZIP
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+
+          $edition = "${{ matrix.edition }}"
+          $releaseDir = "apps\desktop_station\build\windows\x64\runner\Release"
+          if (-not (Test-Path $releaseDir)) {
+            throw "Windows release folder not found: $releaseDir"
+          }
+
+          $portableDir = "ci_artifacts\windows\$edition\desktop-$edition-windows-portable"
+          New-Item -ItemType Directory -Force -Path $portableDir | Out-Null
+          Copy-Item -Recurse -Force (Join-Path $releaseDir "*") $portableDir
+
+          $runtimeDlls = @(
+            "vcruntime140.dll",
+            "vcruntime140_1.dll",
+            "msvcp140.dll",
+            "msvcp140_1.dll",
+            "msvcp140_2.dll",
+            "msvcp140_atomic_wait.dll",
+            "concrt140.dll",
+            "vccorlib140.dll"
+          )
+          $system32 = Join-Path $env:WINDIR "System32"
+          foreach ($dll in $runtimeDlls) {
+            $source = Join-Path $system32 $dll
+            if (Test-Path $source) {
+              Copy-Item -Force $source (Join-Path $portableDir $dll)
+            }
+          }
+
+          @(
+            "SOS Desktop Windows Portable",
+            "",
+            "This package is self-contained for distribution.",
+            "Run: desktop_station.exe",
+            "Do not move the .exe without the DLLs and data folder."
+          ) | Set-Content -Path (Join-Path $portableDir "README_WINDOWS_PORTABLE.txt") -Encoding ASCII
+
+          $requiredFiles = @(
+            "desktop_station.exe",
+            "flutter_windows.dll",
+            "data\app.so",
+            "data\icudtl.dat",
+            "vcruntime140.dll",
+            "msvcp140.dll"
+          )
+          foreach ($required in $requiredFiles) {
+            $candidate = Join-Path $portableDir $required
+            if (-not (Test-Path $candidate)) {
+              throw "Missing required file in Windows portable package: $required"
+            }
+          }
+
+          $zipPath = "ci_artifacts\windows\$edition\desktop-$edition-windows-portable.zip"
+          if (Test-Path $zipPath) {
+            Remove-Item -Force $zipPath
+          }
+          Compress-Archive -Path (Join-Path $portableDir "*") -DestinationPath $zipPath -Force
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-windows-portable-${{ matrix.edition }}
+          path: ci_artifacts/windows/${{ matrix.edition }}/desktop-${{ matrix.edition }}-windows-portable.zip
+          if-no-files-found: error
+
+  java_runtime:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Build Java runtime artifacts (JAR + portable ZIP)
+        shell: pwsh
+        run: |
+          ./scripts/build_java.ps1 -Root ${{ github.workspace }} -Portable
+
+      - name: Upload Java artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: java-runtime
+          path: |
+            java/dist/*.jar
+            java/dist/*-java-portable.zip
+          if-no-files-found: error

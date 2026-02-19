@@ -192,28 +192,121 @@ a {
   gap: 10px;
 }
 
+.download-toolbar {
+  margin: 10px 0 12px;
+}
+
+.download-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.download-filter {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--ink-muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  padding: 7px 11px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.download-filter:hover {
+  border-color: rgba(40, 213, 192, 0.55);
+  color: var(--ink);
+}
+
+.download-filter.active {
+  border-color: rgba(40, 213, 192, 0.75);
+  background: rgba(40, 213, 192, 0.15);
+  color: var(--ink);
+}
+
 .download-card {
   border: 1px solid var(--edge);
   border-radius: 14px;
-  padding: 12px;
+  padding: 14px;
   background: rgba(255, 255, 255, 0.04);
+  display: grid;
+  gap: 10px;
 }
 
 .download-card h4 {
-  margin: 0 0 8px;
+  margin: 0;
   color: var(--accent-cyan);
   font-family: 'IBM Plex Mono', monospace;
 }
 
-.download-card ul {
+.download-caption {
   margin: 0;
-  padding-left: 18px;
+  color: var(--ink-muted);
+  font-size: 12px;
+}
+
+.download-items {
+  margin: 0;
+  padding: 0;
   display: grid;
   gap: 6px;
 }
 
-.download-card li {
+.download-item {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.download-item-main {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.download-link {
+  text-decoration: none;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.download-link:hover {
+  color: var(--accent-cyan);
+}
+
+.download-file {
+  color: var(--ink-muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.download-item-side {
+  display: grid;
+  justify-items: end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.download-pill {
+  border: 1px solid var(--edge);
+  border-radius: 999px;
+  padding: 3px 8px;
   font-size: 14px;
+  color: var(--ink-muted);
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.download-size {
+  color: var(--ink-muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
 }
 
 .table-wrap {
@@ -352,8 +445,8 @@ button.btn {
   }
 }
 
-[dir='rtl'] .download-card ul,
+[dir='rtl'] .download-items,
 [dir='rtl'] .scenario-card ol {
-  padding-right: 18px;
+  padding-right: 0;
   padding-left: 0;
 }

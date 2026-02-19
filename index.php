@@ -67,6 +67,9 @@ $bootstrapJson = htmlspecialchars(sos_bootstrap_json(), ENT_QUOTES, 'UTF-8');
                 <div class="action-row">
                     <button class="btn" id="refreshBtn" data-i18n="downloads_refresh">Refresh data</button>
                 </div>
+                <div class="download-toolbar">
+                    <div id="downloadFilters" class="download-filters"></div>
+                </div>
                 <p class="panel-subtitle"><span data-i18n="downloads_last_update">Last update</span>: <strong id="manifestTimestamp">--</strong></p>
                 <div id="downloadsList" class="download-list"></div>
             </div>
@@ -148,6 +151,7 @@ $bootstrapJson = htmlspecialchars(sos_bootstrap_json(), ENT_QUOTES, 'UTF-8');
     const langSelect = document.getElementById('langSelect');
 
     const downloadsList = document.getElementById('downloadsList');
+    const downloadFiltersEl = document.getElementById('downloadFilters');
     const manifestTimestamp = document.getElementById('manifestTimestamp');
     const versionsManifest = document.getElementById('versionsManifest');
     const matrixBody = document.getElementById('matrixBody');
@@ -192,6 +196,7 @@ $bootstrapJson = htmlspecialchars(sos_bootstrap_json(), ENT_QUOTES, 'UTF-8');
 
     let manifestCache = null;
     let matrixCache = [];
+    let activeDownloadFilter = 'recommended';
 
     function formatBytes(bytes) {
         if (!Number.isFinite(bytes) || bytes <= 0) return '0 B';
@@ -230,12 +235,204 @@ $bootstrapJson = htmlspecialchars(sos_bootstrap_json(), ENT_QUOTES, 'UTF-8');
         }
     }
 
+    const downloadKindMeta = {
+        desktop: {
+            rank: 10,
+            labelKey: 'download_windows_portable',
+            labelFallback: 'Desktop Windows (Portable ZIP)',
+            badgeKey: 'download_badge_windows',
+            badgeFallback: 'Windows',
+        },
+        mobile: {
+            rank: 20,
+            labelKey: 'download_android_mobile',
+            labelFallback: 'Android Mobile',
+            badgeKey: 'download_badge_android',
+            badgeFallback: 'Android',
+        },
+        tv: {
+            rank: 30,
+            labelKey: 'download_android_tv',
+            labelFallback: 'Android TV',
+            badgeKey: 'download_badge_tv',
+            badgeFallback: 'TV',
+        },
+        wear: {
+            rank: 40,
+            labelKey: 'download_android_wear',
+            labelFallback: 'Wearables',
+            badgeKey: 'download_badge_wear',
+            badgeFallback: 'Wear',
+        },
+        java: {
+            rank: 50,
+            labelKey: 'download_java_runtime',
+            labelFallback: 'Java Runtime',
+            badgeKey: 'download_badge_java',
+            badgeFallback: 'Java',
+        },
+    };
+
+    const downloadFilterMeta = {
+        all: {
+            kinds: new Set(['desktop', 'mobile', 'tv', 'wear', 'java']),
+            labelKey: 'download_filter_all',
+            labelFallback: 'All packages',
+        },
+        recommended: {
+            kinds: new Set(['desktop', 'mobile']),
+            labelKey: 'download_filter_recommended',
+            labelFallback: 'Recommended',
+        },
+        desktop: {
+            kinds: new Set(['desktop']),
+            labelKey: 'download_filter_desktop',
+            labelFallback: 'Desktop',
+        },
+        android: {
+            kinds: new Set(['mobile', 'tv', 'wear']),
+            labelKey: 'download_filter_android',
+            labelFallback: 'Android',
+        },
+        mobile: {
+            kinds: new Set(['mobile']),
+            labelKey: 'download_filter_mobile',
+            labelFallback: 'Mobile',
+        },
+        tv: {
+            kinds: new Set(['tv']),
+            labelKey: 'download_filter_tv',
+            labelFallback: 'TV',
+        },
+        wear: {
+            kinds: new Set(['wear']),
+            labelKey: 'download_filter_wear',
+            labelFallback: 'Wear',
+        },
+        java: {
+            kinds: new Set(['java']),
+            labelKey: 'download_filter_java',
+            labelFallback: 'Java',
+        },
+    };
+
+    const downloadFilterOrder = ['all', 'recommended', 'desktop', 'android', 'mobile', 'tv', 'wear', 'java'];
+
+    function artifactMatchesFilter(artifact, filterId) {
+        const filter = downloadFilterMeta[filterId] || downloadFilterMeta.all;
+        return filter.kinds.has(artifact.kind);
+    }
+
+    function renderDownloadFilters(artifacts) {
+        if (!downloadFiltersEl) {
+            return;
+        }
+
+        if (!Array.isArray(artifacts) || artifacts.length === 0) {
+            downloadFiltersEl.innerHTML = '';
+            activeDownloadFilter = 'all';
+            return;
+        }
+
+        const counts = {};
+        downloadFilterOrder.forEach((filterId) => {
+            counts[filterId] = 0;
+        });
+
+        artifacts.forEach((artifact) => {
+            downloadFilterOrder.forEach((filterId) => {
+                if (artifactMatchesFilter(artifact, filterId)) {
+                    counts[filterId] += 1;
+                }
+            });
+        });
+
+        const enabledFilters = downloadFilterOrder.filter((filterId) => filterId === 'all' || counts[filterId] > 0);
+        if (!enabledFilters.includes(activeDownloadFilter)) {
+            activeDownloadFilter = enabledFilters.includes('recommended') ? 'recommended' : 'all';
+        }
+
+        downloadFiltersEl.innerHTML = '';
+        enabledFilters.forEach((filterId) => {
+            const meta = downloadFilterMeta[filterId];
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = `download-filter ${activeDownloadFilter === filterId ? 'active' : ''}`;
+            button.textContent = `${t(meta.labelKey, meta.labelFallback)} (${counts[filterId]})`;
+            button.addEventListener('click', () => {
+                activeDownloadFilter = filterId;
+                renderDownloads();
+            });
+            downloadFiltersEl.appendChild(button);
+        });
+    }
+
+    function classifyArtifact(artifact) {
+        const path = String(artifact.path || '');
+        const parts = path.split('/').filter(Boolean);
+        if (parts.length < 2) {
+            return null;
+        }
+
+        const edition = parts[0];
+        const fileName = parts[parts.length - 1];
+        const lower = fileName.toLowerCase();
+
+        if (!(lower.endsWith('.apk') || lower.endsWith('.zip') || lower.endsWith('.jar'))) {
+            return null;
+        }
+
+        let kind = null;
+        if (edition === 'java' || lower.endsWith('.jar')) {
+            kind = 'java';
+        } else if (/^desktop-.*windows-portable\.zip$/i.test(fileName)) {
+            kind = 'desktop';
+        } else if (/^mobile-.*\.apk$/i.test(fileName)) {
+            kind = 'mobile';
+        } else if (/^tv-.*\.apk$/i.test(fileName)) {
+            kind = 'tv';
+        } else if (/^wear-.*\.apk$/i.test(fileName)) {
+            kind = 'wear';
+        } else {
+            return null;
+        }
+
+        return {
+            path,
+            edition,
+            fileName,
+            size: Number(artifact.size || 0),
+            kind,
+            rank: downloadKindMeta[kind].rank,
+        };
+    }
+
+    function resolveDownloadMeta(artifact) {
+        const base = downloadKindMeta[artifact.kind];
+        if (!base) {
+            return null;
+        }
+
+        if (artifact.kind === 'java' && /-java-portable\.zip$/i.test(artifact.fileName)) {
+            return {
+                ...base,
+                labelKey: 'download_java_portable',
+                labelFallback: 'Java Portable Bundle (ZIP)',
+            };
+        }
+
+        return base;
+    }
+
     function renderDownloads() {
         const manifest = manifestCache;
         downloadsList.innerHTML = '';
 
         if (!manifest || !Array.isArray(manifest.artifacts) || manifest.artifacts.length === 0) {
             downloadsList.innerHTML = `<div class="download-card">${t('downloads_empty', 'No artifacts found in manifest.')}</div>`;
+            if (downloadFiltersEl) {
+                downloadFiltersEl.innerHTML = '';
+            }
             manifestTimestamp.textContent = '--';
             versionsManifest.textContent = '--';
             return;
@@ -245,37 +442,78 @@ $bootstrapJson = htmlspecialchars(sos_bootstrap_json(), ENT_QUOTES, 'UTF-8');
         versionsManifest.textContent = manifest.generatedAt || '--';
 
         const grouped = { mini: [], standard: [], server: [], java: [] };
+        let packageCount = 0;
+        const allPackages = [];
         for (const artifact of manifest.artifacts) {
-            const path = String(artifact.path || '');
-            const head = path.split('/')[0];
-            if (grouped[head]) {
-                grouped[head].push(artifact);
+            const classified = classifyArtifact(artifact);
+            if (!classified) {
+                continue;
+            }
+            if (grouped[classified.edition]) {
+                grouped[classified.edition].push(classified);
+                packageCount += 1;
+                allPackages.push(classified);
             }
         }
 
+        if (packageCount === 0) {
+            downloadsList.innerHTML = `<div class="download-card">${t('downloads_empty', 'No artifacts found in manifest.')}</div>`;
+            if (downloadFiltersEl) {
+                downloadFiltersEl.innerHTML = '';
+            }
+            return;
+        }
+
+        renderDownloadFilters(allPackages);
+
         const order = ['mini', 'standard', 'server', 'java'];
+        let filteredCount = 0;
         order.forEach((edition) => {
-            const artifacts = grouped[edition];
+            const artifacts = grouped[edition].filter((artifact) => artifactMatchesFilter(artifact, activeDownloadFilter));
             if (!artifacts || artifacts.length === 0) {
                 return;
             }
 
+            filteredCount += artifacts.length;
+            artifacts.sort((a, b) => (a.rank - b.rank) || a.fileName.localeCompare(b.fileName));
+
             const card = document.createElement('article');
             card.className = 'download-card';
-            card.innerHTML = `<h4>${editionLabel(edition)}</h4>`;
+            card.innerHTML = `
+                <h4>${editionLabel(edition)}</h4>
+                <p class="download-caption">${t('downloads_release_only', 'Only final install packages are listed in this catalog.')}</p>
+            `;
 
-            const list = document.createElement('ul');
+            const list = document.createElement('div');
+            list.className = 'download-items';
             artifacts.forEach((artifact) => {
-                const fileName = String(artifact.path || '').split('/').pop();
-                const size = formatBytes(Number(artifact.size || 0));
-                const item = document.createElement('li');
-                item.innerHTML = `<a href="downloads/${artifact.path}">${fileName}</a> <span class="panel-subtitle">(${size})</span>`;
+                const meta = resolveDownloadMeta(artifact);
+                if (!meta) {
+                    return;
+                }
+                const size = formatBytes(artifact.size);
+                const item = document.createElement('article');
+                item.className = 'download-item';
+                item.innerHTML = `
+                    <div class="download-item-main">
+                        <a class="download-link" href="downloads/${artifact.path}" download>${t(meta.labelKey, meta.labelFallback)}</a>
+                        <div class="download-file">${artifact.fileName}</div>
+                    </div>
+                    <div class="download-item-side">
+                        <span class="download-pill">${t(meta.badgeKey, meta.badgeFallback)}</span>
+                        <span class="download-size">${size}</span>
+                    </div>
+                `;
                 list.appendChild(item);
             });
 
             card.appendChild(list);
             downloadsList.appendChild(card);
         });
+
+        if (filteredCount === 0) {
+            downloadsList.innerHTML = `<div class="download-card">${t('downloads_filter_empty', 'No packages available for this filter.')}</div>`;
+        }
     }
 
     function renderMatrix() {
